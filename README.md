@@ -1,0 +1,1 @@
+これはshooting game
