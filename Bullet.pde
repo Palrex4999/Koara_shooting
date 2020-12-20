@@ -15,7 +15,7 @@ class Bullet {
   private int b_timer;
   private ArrayList<Enemy> enemies;
 
-  public Bullet(PVector pos, PVector vel, int dam, boolean player) {
+  public Bullet(PVector pos, PVector vel, int dam, boolean player) { //敵と自分の弾
     position = pos.copy();
     velocity = vel.copy();
     damage = dam;
@@ -38,12 +38,12 @@ class Bullet {
       position.x += velocity.x;
       position.y += velocity.y;
     } else {
-      if (moving_pattern == 0) {
+      if (moving_pattern == 0) { //まっすぐ
         position.add(velocity);
       } else if (moving_pattern == 1) {
-        position.x += velocity.x * sin(1000.0 * millis()/1000000.0);
+        position.x += velocity.x * sin(1000.0 * millis()/1000000.0); //回転？
         position.y += velocity.y;
-      } else {
+      } else { //
         position.add(velocity);
         ArrayList<Player> players = world.getPlayers();
         for (Player p : players) {
@@ -59,13 +59,13 @@ class Bullet {
 
   public void draw() {
     noStroke();
-    if(is_player){
+    if(is_player){ //プレイヤー
       for(int i=-6; i<=6; i=i+6){
         fill(255, 0, 0, 150);
         circle(position.x+i, position.y, 12);
         circle(position.x, position.y+i, 12);
       }
-    }else{
+    }else{ //敵
       if(((millis())%400) > 200) fill(0, 0, 155, 400 - ((millis())%400));
       else fill(0, 0, 155, (millis())%200);
       for(int i=-4; i<=4; i=i+2){

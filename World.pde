@@ -1,6 +1,6 @@
 // ゾウさんチームが主に編集するところ
 // 音楽やスタート演出、終了演出などがあるといい？シーン遷移があると、とてもいいと思います。
-
+//ゲームシーンの遷移に関する
 class World {
   public World() {
     players = new ArrayList<Player>();
@@ -9,7 +9,7 @@ class World {
     //日本語表示対応
     PFont font = createFont("MS Gothic",50);
     textFont(font);
-
+    //サウンド関係
     minim = new Minim(getPApplet());
     bgm_start = minim.loadFile("dance.mp3");
     bgm_game = minim.loadFile("digitalworld.mp3");
@@ -21,13 +21,13 @@ class World {
   }
 
   int score;
-  private ArrayList<Player> players;
-  private ArrayList<Enemy> enemies;
-  private Boss boss;
+  private ArrayList<Player> players; //プレイヤー(配列にする理由は？複数プレイに対応？)
+  private ArrayList<Enemy> enemies; //敵
+  private Boss boss; //ボス
   private PVector player_p;  //player座標
   private PImage back; //プレイ画面の背景
 
-  private int scene = 0; // 0: スタート画面，1: ゲーム画面，0: ゲームオーバー画面
+  private int scene = 0; // 0: スタート画面，1: ゲーム画面，2: ゲームオーバー画面
 
   private boolean boss_in = false; // true: boss出現
 
@@ -57,22 +57,22 @@ class World {
   }
 
   /**************** スタート画面 **************************/
-  private int textAlpha_start = 0;
-  private boolean textAlphaIsAscending_start = true;
+  private int textAlpha_start = 0; //文字の透明度
+  private boolean textAlphaIsAscending_start = true; //透明化をスタートさせるか
 
-  private int[] starsX_start, starsY_start;
-  private int starsNum_start = 300;
+  private int[] starsX_start, starsY_start;  //星の位置座標
+  private int starsNum_start = 300; //星の数
 
-  private boolean shootingStarOn_start = false;
-  private int shootingStarX_start, shootingStarY_start;
+  private boolean shootingStarOn_start = false; //流れ星を流すか
+  private int shootingStarX_start, shootingStarY_start;  //流れ星の位置座標
 
-  PImage titleImg_start;
+  PImage titleImg_start; //スタート画面のタイトル画像
 
   private void init_start() {
     // スタート画面での初期化
     textAlpha_start = 0;
     textAlphaIsAscending_start = true;
-
+    //星の位置をランダムで決定
     starsX_start = new int[starsNum_start];
     starsY_start = new int[starsNum_start];
     for(int i=0; i<starsNum_start; i++){
@@ -83,7 +83,7 @@ class World {
     shootingStarOn_start = false;
 
     titleImg_start = loadImage("title.png");
-
+    //BGM
     bgm_start.rewind();
     bgm_start.loop();
   }
@@ -91,7 +91,7 @@ class World {
   private void draw_start() {
     // スタート画面での毎フレームの処理
     background(25, 25, 50);
-
+    //星を描画
     for(int i=0; i<starsNum_start; i++){
       int brightness = (int)random(100, 255);
       fill(brightness, brightness, 200);
@@ -121,14 +121,14 @@ class World {
         shootingStarOn_start = true;
       }
     }
-
+    //タイトル画像を表示
     image(titleImg_start, width/2-300, 70, 600, 320);
 
     textAlign(CENTER);
     fill(0, 255, 255, textAlpha_start);
     textSize(30);
     text("Press ENTER", width/2-100, 450, 200, 50);
-
+    //文字の透明度を変更
     if(textAlphaIsAscending_start){
      textAlpha_start += 2;
      if(textAlpha_start > 255)
@@ -141,19 +141,20 @@ class World {
   }
 
   /***************** ゲーム画面 **************************/
-  int lastHP_game = 0;
+  int lastHP_game = 0; //残りHP
   boolean isGameOver_game = false;
 
   int beated;
   
   private void init_game() {
     // ゲーム画面での初期化
-    players = new ArrayList<Player>();
+    players = new ArrayList<Player>(); 
     enemies = new ArrayList<Enemy>();
+    //プレイヤーの生成
     Player p = new Player(new PVector(width/2.0, height * (3/4.0)));
     players.add(p);
     isGameOver_game = false;
-
+    //ボスの生成
     boss = new Boss(new PVector(random(width), random(height)));
     boss_in = false;
 
@@ -171,28 +172,28 @@ class World {
     // ゲーム画面での毎フレームの処理
 
     lastHP_game = 0;
-    
+    //120フレームごとに敵を追加
     if(frameCount%120==0 && !boss_in) {
       Enemy e = new Enemy(new PVector(random(width), random(height)));
       enemies.add(e);
     }
-
+    //敵の毎フレームごとの処理
     for(int e_idx = 0; e_idx < enemies.size(); e_idx++) {
       Enemy enemy = enemies.get(e_idx);
       enemy.update();
-      if(enemy.isHitted()){
+      if(enemy.isHitted()){ //弾がヒットしたら
         score+=10;
       }
-      if(enemy.is_dead){
+      if(enemy.is_dead){ //敵が死んだら
         enemies.remove(e_idx);
         score+=500;
         beated++;
       }
-      else
+      else 
         enemy.draw();
     }
 
-    if(boss_in){
+    if(boss_in){ //ボス登場
       boss.update();
       if (boss.is_dead){ // Bossが倒されたらisGameOver_gameをtrueにする
         isGameOver_game = true;
@@ -203,16 +204,16 @@ class World {
     }else if(beated>=10){ // enemy撃破数でtrueに変更
       boss_in = true;
     }
-
+    //プレイヤーの毎フレームごとの処理
     for(Player player : players) {
       player.update();
       player.draw();
       player_p = player.getPosition();
-
+      //UIの表示
       drawHP(player);
       drawLife(player);
       drawScore();
-
+      //HP管理
       if(player.getHP()<=0){
         player.setHP(100);
         player.life--;
@@ -220,6 +221,7 @@ class World {
         textSize(30);
         delay(500);
       }
+      //ライフ管理
       if(player.getLife()<=0)
         isGameOver_game = true;
 
@@ -230,20 +232,20 @@ class World {
       changeSceneTo(2);
   }
 
- void drawHP(Player player){
+ void drawHP(Player player){ //残りHPの描画
       fill(200);
       rect(30,8,200,30);
       fill(255,0,0);
       rect(30,8,player.getHP()*2,30);
   }
 
- void drawLife(Player player){
+ void drawLife(Player player){ //残りライフの描画
        fill(255);
        textSize(30);
        text("LIFE:"+player.getLife(),100,70);
  }
 
- void drawScore(){
+ void drawScore(){ //スコアの表示
     fill(255);
     textSize(30);
     text("SCORE:"+score,width/2.0,35);
@@ -270,7 +272,7 @@ class World {
     strokeWeight(2);
     line(width/2-(frameCount_over%20)*5, 150, width/2+(frameCount_over%20)*5, 150);
     strokeWeight(1);
-
+    //スコアと倒した敵の数の表示
     fill(50);
     textAlign(CENTER);
     text("RESULT", 100, 100, width-200, 50);
@@ -332,13 +334,13 @@ class World {
       init_start();
     }
   }
-
+  //キーボード処理
   void keyPressed(int key) {
     if(scene == 0){ // スタート画面
       if(key == ENTER){
         sound_pikin.rewind();
         sound_pikin.play();
-        changeSceneTo(1);
+        changeSceneTo(1); //ゲーム画面に遷移
       }
     }
 
@@ -353,7 +355,7 @@ class World {
       if(key == ENTER){
         sound_pikin.rewind();
         sound_pikin.play();
-        changeSceneTo(0);
+        changeSceneTo(0); //タイトル画面に遷移
       }
     }
 
@@ -369,7 +371,7 @@ class World {
   void keyReleased(int key){
     for(Player player : players) player.keyReleased(key);
   }
-
+  //マウス処理
   void mousePressed(){
     if(scene == 1){
       for(Player player : players) player.mousePressed();
@@ -379,7 +381,7 @@ class World {
     if(scene == 2){ // ゲームオーバー画面
       if(450 < mouseY && mouseY < 450+100){
         if(width/2-100-125 < mouseX && mouseX < width/2-100){ // Retryボタン
-          changeSceneTo(1);
+          changeSceneTo(1); //ゲーム画面に遷移
           sound_pikin.rewind();
           sound_pikin.play();
         }
@@ -387,7 +389,7 @@ class World {
           sound_pikin.rewind();
           sound_pikin.play();
           getPApplet().stop();
-          exit();
+          exit(); //アプリケーションを終了
         }
       }
     }

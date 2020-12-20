@@ -1,14 +1,14 @@
 // プレイヤーを実装してください。ゲームバランスを考えた"良い"プレイヤーの実装をお願いします。
 
 class Player {
-  private PVector position;
-  private int HP;
-  private int life;
-  private int size;
-  private ArrayList<Bullet> bullets;
-  private float angle;
+  private PVector position; //位置
+  private int HP; //HP
+  private int life; //ライフ
+  private int size; //プレイヤーの大きさ
+  private ArrayList<Bullet> bullets; //弾
+  private float angle; //プレイヤーの角度
   
-  public boolean is_dead;
+  public boolean is_dead; //プレイヤーの状態
   
   Minim minim;
   AudioPlayer shootSE, hitSE, clushSE;
@@ -25,6 +25,7 @@ class Player {
     clushSE = minim.loadFile("flee1.mp3");
   }
 
+  //プレイヤーに敵の弾が当たった時の処理
   public void hit(int damage) {
     HP -= damage;
     if(HP < 0) {

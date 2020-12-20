@@ -74,7 +74,6 @@ class Enemy {
   }
   
   public void update() {
-
     move();
     shoot();
     hit();

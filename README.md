@@ -1,61 +1,3 @@
-# git講習会課題 その2
-
-チームでクラスを開発して、Masterリポジトリに統合しよう！
-目標は画像のようにシューティングゲームが動くようになることです．
-
-![example](img/example.png)
-
-各々, 画像を使ったり，音を出したり，好きなように実装しましょう！
-
-## 開発チーム
-
-### ライオン㌠ (Bullet クラス)
-- **Saito**
-- Takeuchi
-- Ushiyama
-
-### うさぎ㌠ (Player クラス)
-- **Manabe**
-- Kameoka
-- Kiuchi
-- Sanada
-
-### くま㌠ (Enemy クラス)
-- **Hoshi**
-- Naito
-- Kaneko
-- Kajimoto
-
-### ぞう㌠ (World クラス)
-- **Kaneda**
-- Mizuta
-- Zhang
-
-
-# 手順
-1. 各チームごとの自分のチームのブランチに移動します。
-2. 各ブランチでクラスを一つ実装してください。
-    - `Enemy.pde`
-    - `Bullet.pde`
-    - `World.pde`
-    - `Player.pde`
-    - の4つになります.
-3. そのブランチの中で、さらに個人用のブランチに分かれて機能を一つ実装してください。
-
-ブランチの分かれかたのイメージを画像に示します
-チームごとに，実装する機能に合わせてブランチを切り，そのブランチから各人のブランチを切ります．
-
-<img src="img/branch_image2.png" width=50%>
-
-開発をする時には，GitHub の issue の機能など積極的に使ってみてください！
-時には他のチームと話し合うことも必要かもしれません．
-
-4. 開発した機能を各チームのブランチにマージします。
-   - コンフリクトが起きた場合はチーム内で解決しましょう！
-5. 最後にMasterブランチに統合して終了です
-   - MasterブランチにPullRequest をなげてください．
-6. 完成した作品は担当者が実行します。
-
 # それぞれのクラス
 
 ## Player
@@ -63,8 +5,6 @@
 - プレイヤが操作するオブジェクト
 - HPを持っていて敵からの攻撃によって, HPが減っていきます．
   - 0になってしまったら GAMEOVER
-- 何を実装するのも自由！
-  - プレイヤーのアイコンを変えたり，発射する時に音を鳴らしたり...
 
 ### member
 
@@ -72,6 +12,10 @@
 - `private int HP`                   : Hit Point
 - `private int size`                 : 当たり判定領域
 - `private ArrayList<Bullet> bullets`: 発射した弾たち
+- `private float angle`              : プレイヤーの角度
+- `public boolean is_dead`           : プレイヤーの状態
+- `private int hitCount, boostCount, shootCount, clushCount` 
+- `private PVector[] debris`         : xにrad, yに変位
 
 ### `public void draw()`
 
@@ -120,6 +64,43 @@
 
 - Playerの現在のHPを返す
 
+### `setLife()`
+
+- Playerの現在のライフをセットする
+
+
+### `getLife()`
+
+- Playerの現在のライフを返す
+
+### `drawProperties()`
+
+- 
+
+### `drawAircraft()`
+
+-
+
+### `drawDebri()`
+
+-
+
+### `animation()`
+
+-
+
+### `checkWall()`
+
+-
+
+### `calcHeadingAngle()`
+
+-
+
+### `changePosition()`
+
+-
+
 ## Enemy
 
 - 敵のクラス
@@ -134,11 +115,25 @@
 - `private ArrayList<Bullet> bullets`: 発射した弾たち
 - `private int size`                 : 当たり判定領域
 - `public boolean is_dead`           : Dead or Alive
+- `int hp`                           : HP
+- `float heartbeat_phase,heartbeat_freq` :
+- `private boolean isShooted`        :射撃したか保持する変数．
+- `private int shootingTiming_ms`    :射撃タイミングの設定
+- `private int moveselect`           :Enemyの動きを選択する
+- `private int moveflag`             :動きを変えるタイミング
+- `private PVector velocity`         :動きパターン1の速度
+- `private PVector velocity2`        :動きパターンの速度
+- `private long lastHitTime_ms`      :最後にBulletに当たった時刻(ms)
+- `final int INVINCIBLE_TERM_MS = 1000`  : 無敵期間(ms)
 
 ### `public void draw()`
 
 - `draw` 関数がWorldクラスから呼ばれます．ここにEnemyを描画する処理を書いてください
   - 他の関数を実行したい場合は `draw`関数の中で実行するようにしてください.
+
+### `drawBulltes()`
+
+- 弾の描画
 
 ### `public void keyPresssed(int key)`
 
@@ -154,11 +149,19 @@
   - 自分の発射した弾はリストとして各オブジェクトが持っています
 - `Bullet` の描画は各Enemyが行います．
 
+### `threewayShoot()`
+
+- 
+
+### `threeWayShooter_addtiming()`
+
+-
+
 ### 移動
 
-- 基本, 自由に動き回ります.
-- どう動かすかはあなた次第！
+### `public void move()`
 
+- 移動
 
 
 ### 当たり判定
@@ -166,10 +169,27 @@
 - `update` 内部で当たり判定の処理をしています．
 - `radius` が当たり判定のエリアで，この領域とPlayerが発射した弾が重なると`当たり`になります．
 
-### `public void hit()`
+### `private void hit()`
 
 - Player の弾が当たったときの処理
 - `is_dead` フラグを立てると，そのEnemyはWorldクラスの中で死亡判定されオブジェクトが削除されます
+
+### `Boolean isInvincible()`
+
+-
+
+### `private Bpplean isHitted()`
+
+-
+
+### `protected void divideSelf()`
+
+-
+
+### セッターゲッター
+### `ArrayList<Bullet> getBullets()`
+
+- 
 
 ## Bullet
 
@@ -183,24 +203,47 @@
 - `private PVector position`: 位置座標
 - `private PVector velocity`: 弾の速度
 - `private int damage`      : 与えるダメージ量
+- `private boolean is_player`: プレイヤーかどうか
+- `private int moving_pattern`: 弾の軌道パターン
+- `private PVector init_position`: 弾の位置
+- `private int counter` : 
+- `private SubBullet subBullet`
+- `
+- `private boolean explode` :爆発弾か
+- `private boolean homing`: ホーミング弾か
+- `private int b_timer` : 
+- `private ArrayList<Enemy> enemies` : 
 
+### 描画
 ### `public void draw()`
 
 - `draw` 関数によって弾の描画を行います．この関数は発射したオブジェクト(PlayerかEnemy)によって呼び出されます
 
-### `public int getDamage()`
+### `void explosion()`
 
-- 弾のダメージ量を返す
+- 爆発して消える弾
 
-### `public PVector getPosition()`
+### `void homing()`
 
-- 弾の位置を PVector で返す
+- ホーミングする弾
+
 
 ### 移動
 
 ### `void update()`
 
 - `velocity`に合わせて位置 (`position`) を更新します.
+
+### ゲッターセッター
+
+### `public PVector getPosition()`
+
+- 弾の位置をPVectorで返す
+
+### `public int getDamage`
+
+-　弾が与えるダメージ量を返す
+
 
 ## World
 
@@ -213,11 +256,64 @@
 - `int score`                        : スコア
 - `private ArrayList<Player> players`: プレイヤーのリスト
 - `private ArrayList<Enemy> ememies` : 敵のリスト
+- `private Boss boss` : ボス
+- `private PVector player_p` : player座標
+- `private PImage back` : プレイ画面の背景
+- `private int scene` 0: スタート画面，1: ゲーム画面，2: ゲームオーバー画面
+- `private boolean boss_in` : true: boss出現
 
 ### `void init()`
 
 - ゲーム開始時の処理
 
+###　スタート画面
+### `private void init_start()`
+
+- スタート画面での初期化
+
+### `draw_start()`
+
+- スタート画面での毎フレームの処理
+
+### ゲーム画面
+### `private void init_game()`
+
+- ゲーム画面の初期化
+
+### `private void draw_game`
+
+- ゲーム画面でのマイフレームの初期化
+
+### `void drawHP()`
+
+- プレイヤーのHPの描画
+
+### `void drawLife()`
+
+- プレイヤーのライフの描画
+
+### `void drawScore`
+
+- スコアの表示
+
+### ゲームオーバー画面
+### `private void init_over()`
+
+- ゲームオーバー画面の初期化
+
+### `private void draw_over()`
+
+- ゲームオーバー画面でのマイフレームの処理
+
+### `void changeSceneTo()`
+
+- シーン遷移関数
+
+
+
+
+
+### ゲッターセッター
 ### `ArrayList<Player> getPlayers()`
 
 - 現在アクティブのPlayerのリストを返す
@@ -241,6 +337,8 @@
 - main ループから key が渡されてきます
 - players にkey をそのまま流し込みます．
 - また，key に対応した処理も実装します
+
+
 
 # その他
 - Masterで使う機能は表示したい内容によって変えても構いません。
