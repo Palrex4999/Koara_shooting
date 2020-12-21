@@ -7,7 +7,17 @@ class Player {
   private int size; //プレイヤーの大きさ
   private ArrayList<Bullet> bullets; //弾
   private float angle; //プレイヤーの角度
-  
+
+  //////////////////////////////////////////
+  //2021須賀修正分：
+  //クラス下部で行われていた変数宣言を上部へ
+  //NullPointerException防止でclushCountを-1で初期化
+  private int hitCount, boostCount, shootCount;
+  private int clushCount=-1;
+  private PVector[] debris = new PVector[6];//xにrad, yに変位
+  //////////////////////////////////////////
+
+
   public boolean is_dead; //プレイヤーの状態
   
   Minim minim;
@@ -71,7 +81,7 @@ class Player {
     checkWall();
   }
 
-  // 弾丸を発射する関数。
+  // 弾丸を発射する関数
   public void shoot() {
     float bulletVel = 3.0;
     for (int i = -1; i <= 1; i++) {
@@ -90,7 +100,14 @@ class Player {
     push();
     this.angle = calcHeadingAngle(this.position, new PVector(mouseX, mouseY));
     translate(position.x, position.y);
-    if(millis() - clushCount < 2000) drawDebri(millis() - clushCount);
+
+    //////////////////////////////////////////
+    //2021須賀修正分：
+    //NullPointerException防止のためclushCount!=-1を条件に追加
+    if(clushCount!=-1 && millis() - clushCount < 2000)
+      drawDebri(millis() - clushCount);
+    //////////////////////////////////////////
+    
     rotate(this.angle);
     
     noStroke();
@@ -162,12 +179,9 @@ class Player {
       fill(255, 255, 0);
       ellipse(s/10.0*debris[idx].y*cos(debris[idx].x), s/10.0*debris[idx].y*sin(debris[idx].x),
       10, 10);
-      println("f");
     }
   }
 
-  private int hitCount, boostCount, shootCount, clushCount;
-  private PVector[] debris = new PVector[6];//xにrad, yに変位
   public void animation() {
     boostCount = (millis() - boostCount >= 200) ? millis() : boostCount ;
   }
