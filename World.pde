@@ -2,6 +2,51 @@
 // 音楽やスタート演出、終了演出などがあるといい？シーン遷移があると、とてもいいと思います。
 //ゲームシーンの遷移に関する
 class World {
+  //////////////////////////////////////////
+  //2021須賀修正分：
+  //変数宣言をクラス最上部にまとめた
+  //アクセス修飾子を適切につけた
+  //各変数にコメント追記・修正加えた
+  private int scene = 0; // 0: スタート画面，1: ゲーム画面，2: ゲームオーバー画面
+
+  //スタート画面に用いる変数
+  private int textAlpha_start = 0; //文字の透明度
+  private int textAlphaSign = 1; //透明化の正負の向き
+  private int[] starsX_start, starsY_start;  //星の位置座標
+  private final int starsNum_start = 300; //星の数
+  private boolean shootingStarOn_start = false; //流れ星を流すか
+  private int shootingStarX_start, shootingStarY_start;  //流れ星の位置座標
+
+  private PImage titleImg_start; //スタート画面のタイトル画像
+
+  //ゲーム画面に用いる変数
+  private ArrayList<Player> players; //プレイヤー
+  private ArrayList<Enemy> enemies; //敵
+  private Boss boss; //ボス
+  private int score;//得点
+  private int lastHP_game = 0; //残りHP
+  private int beated; //敵の撃破数
+  private boolean boss_in = false; // true: boss出現
+  private boolean isGameOver_game = false;//ゲームオーバーかどうか
+
+  private PVector player_p;  //player座標
+  private PImage back; //プレイ画面の背景
+  
+
+  //ゲームオーバー画面に用いる変数
+  private int frameCount_over = 0;//ゲームオーバー画面の経過時間
+  
+  //音
+  private Minim minim;
+  private AudioPlayer bgm_start, bgm_game, bgm_over;
+  private AudioPlayer sound_pikin;
+
+  
+  //////////////////////////////////////////
+
+  ArrayList<Player> getPlayers() { return this.players; }
+  ArrayList<Enemy> getEnemies() { return this.enemies; }  
+
   public World() {
     players = new ArrayList<Player>();
     enemies = new ArrayList<Enemy>();
@@ -16,28 +61,8 @@ class World {
     bgm_over = minim.loadFile("yokoku_cut.mp3");
     sound_pikin = minim.loadFile("button31.mp3");
 
-
     init();
   }
-
-  int score;
-  private ArrayList<Player> players; //プレイヤー(配列にする理由は？複数プレイに対応？)
-  private ArrayList<Enemy> enemies; //敵
-  private Boss boss; //ボス
-  private PVector player_p;  //player座標
-  private PImage back; //プレイ画面の背景
-
-  private int scene = 0; // 0: スタート画面，1: ゲーム画面，2: ゲームオーバー画面
-
-  private boolean boss_in = false; // true: boss出現
-
-  ArrayList<Player> getPlayers() { return this.players; }
-
-  ArrayList<Enemy> getEnemies() { return this.enemies; }
-
-  Minim minim;
-  AudioPlayer bgm_start, bgm_game, bgm_over;
-  AudioPlayer sound_pikin;
 
   void draw() {
     if(scene == 1){
@@ -57,21 +82,11 @@ class World {
   }
 
   /**************** スタート画面 **************************/
-  private int textAlpha_start = 0; //文字の透明度
-  private boolean textAlphaIsAscending_start = true; //透明化をスタートさせるか
-
-  private int[] starsX_start, starsY_start;  //星の位置座標
-  private int starsNum_start = 300; //星の数
-
-  private boolean shootingStarOn_start = false; //流れ星を流すか
-  private int shootingStarX_start, shootingStarY_start;  //流れ星の位置座標
-
-  PImage titleImg_start; //スタート画面のタイトル画像
-
   private void init_start() {
     // スタート画面での初期化
     textAlpha_start = 0;
-    textAlphaIsAscending_start = true;
+    textAlphaSign = 1;
+
     //星の位置をランダムで決定
     starsX_start = new int[starsNum_start];
     starsY_start = new int[starsNum_start];
@@ -128,24 +143,19 @@ class World {
     fill(0, 255, 255, textAlpha_start);
     textSize(30);
     text("Press ENTER", width/2-100, 450, 200, 50);
+    
     //文字の透明度を変更
-    if(textAlphaIsAscending_start){
-     textAlpha_start += 2;
-     if(textAlpha_start > 255)
-       textAlphaIsAscending_start = false;
-    }else{
-      textAlpha_start -= 2;
-     if(textAlpha_start < 0)
-       textAlphaIsAscending_start = true;
-    }
+    
+    //////////////////////////////////////////
+    //2021須賀修正分：
+    //条件分岐簡略化：boolでなく符号の向きを管理するよう変更
+    textAlpha_start+=textAlphaSign*2;
+    if(textAlpha_start > 255 || textAlpha_start < 0)
+      textAlphaSign*=-1;
+    //////////////////////////////////////////
   }
 
   /***************** ゲーム画面 **************************/
-  int lastHP_game = 0; //残りHP
-  boolean isGameOver_game = false;
-
-  int beated;
-  
   private void init_game() {
     // ゲーム画面での初期化
     players = new ArrayList<Player>(); 
@@ -164,6 +174,13 @@ class World {
     for (Player player : players) {
       player_p = player.getPosition();
     }
+
+    //////////////////////////////////////////
+    //2021須賀追記分：
+    //リトライ時にスコアや撃破数をリセットした真っ新な状態にする
+    score=0;
+    beated=0;
+    //////////////////////////////////////////
   }
 
   private void draw_game() {
@@ -252,8 +269,6 @@ class World {
   }
 
   /************* ゲームオーバー画面 ***********************/
-  int frameCount_over = 0;
-
   private void init_over() {
     // ゲームオーバー画面での初期化
     background(25, 25, 50);
@@ -322,6 +337,8 @@ class World {
       bgm_start.pause();
       bgm_over.pause();
       
+      score=1;
+
       scene = 1;
       init_game();
     }else if(sceneNo == 2){
@@ -359,7 +376,7 @@ class World {
       }
     }
 
-    if(key == 'e') {
+    if(key == 'e') {//eキーで敵を出現させる(デバッグ用？)
       Enemy e = new Enemy(new PVector(random(width), random(height)));
       enemies.add(e);
     }
