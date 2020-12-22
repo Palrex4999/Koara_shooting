@@ -7,7 +7,17 @@ class Player {
   private int size; //プレイヤーの大きさ
   private ArrayList<Bullet> bullets; //弾
   private float angle; //プレイヤーの角度
-  
+
+  //////////////////////////////////////////
+  //2021須賀修正分：
+  //クラス下部で行われていた変数宣言を上部へ
+  //NullPointerException防止でclushCountを-1で初期化
+  private int hitCount, boostCount, shootCount;
+  private int clushCount=-1;
+  private PVector[] debris = new PVector[6];//xにrad, yに変位
+  //////////////////////////////////////////
+
+
   public boolean is_dead; //プレイヤーの状態
   
   Minim minim;
@@ -49,9 +59,18 @@ class Player {
   }
 
   public void hitCheck() {
+    //雑魚敵の弾の衝突判定
     for (Enemy enemy : world.getEnemies()) {
       for (int b_idx = enemy.getBullets().size()-1; b_idx > 0; b_idx--) {
         Bullet e_bullet = enemy.getBullets().get(b_idx);
+        
+        //////////////////////////////////////////
+        //2021須賀追記：
+        //モートン番号が異なる場合は衝突判定を計算しない
+        if(world.mt.getMortonNum(position)!=world.mt.getMortonNum(e_bullet.getPosition()))
+          continue;
+        //////////////////////////////////////////
+        
         float dist = PVector.sub(e_bullet.getPosition(), position).mag();
         // 衝突判定
         if (dist < size/2 && millis() - hitCount > 1000) {
@@ -61,6 +80,30 @@ class Player {
         }
       }
     }
+
+    //////////////////////////////////////////
+    //2021須賀追記：
+    //ボスの弾の衝突判定
+    Boss boss=world.getBoss();
+    for (int b_idx = boss.getBullets().size()-1; b_idx > 0; b_idx--) {
+      Bullet e_bullet = boss.getBullets().get(b_idx);
+
+      //////////////////////////////////////////
+      //2021須賀追記：
+      //モートン番号が異なる場合は衝突判定を計算しない
+      if(world.mt.getMortonNum(position)!=world.mt.getMortonNum(e_bullet.getPosition()))
+        continue;
+      //////////////////////////////////////////
+
+      float dist = PVector.sub(e_bullet.getPosition(), position).mag();
+      // 衝突判定
+      if (dist < size/2 && millis() - hitCount > 1000) {
+        int damage = e_bullet.getDamage();
+        hit(damage);
+        boss.getBullets().remove(b_idx);
+      }
+    }
+    //////////////////////////////////////////
   }
 
   // hit処理、場所のアップデートなど
@@ -71,13 +114,13 @@ class Player {
     checkWall();
   }
 
-  // 弾丸を発射する関数。
+  // 弾丸を発射する関数
   public void shoot() {
     float bulletVel = 3.0;
     for (int i = -1; i <= 1; i++) {
-      float theta = -PI/2 + i*PI/6.0 + this.angle;
-      float xDir = cos(theta) * bulletVel;
-      float yDir = sin(theta) * bulletVel;
+      int theta = int(degrees(3*PI/2 + i*PI/6.0 + this.angle))%360;
+      float xDir = world.sc.cos[theta] * bulletVel;
+      float yDir = world.sc.sin[theta] * bulletVel;
       bullets.add(new Bullet(this.position.copy(), new PVector(xDir, yDir), 10, true));
     }
     shootSE.rewind();
@@ -90,7 +133,14 @@ class Player {
     push();
     this.angle = calcHeadingAngle(this.position, new PVector(mouseX, mouseY));
     translate(position.x, position.y);
-    if(millis() - clushCount < 2000) drawDebri(millis() - clushCount);
+
+    //////////////////////////////////////////
+    //2021須賀修正分：
+    //NullPointerException防止のためclushCount!=-1を条件に追加
+    if(clushCount!=-1 && millis() - clushCount < 2000)
+      drawDebri(millis() - clushCount);
+    //////////////////////////////////////////
+    
     rotate(this.angle);
     
     noStroke();
@@ -160,14 +210,11 @@ class Player {
   private void drawDebri(int s){
     for(int idx = 0; idx < 6; idx++){
       fill(255, 255, 0);
-      ellipse(s/10.0*debris[idx].y*cos(debris[idx].x), s/10.0*debris[idx].y*sin(debris[idx].x),
+      ellipse(s/10.0*debris[idx].y*world.sc.cos[int(degrees(debris[idx].x))%360], s/10.0*debris[idx].y*world.sc.sin[int(debris[idx].x)%360],
       10, 10);
-      println("f");
     }
   }
 
-  private int hitCount, boostCount, shootCount, clushCount;
-  private PVector[] debris = new PVector[6];//xにrad, yに変位
   public void animation() {
     boostCount = (millis() - boostCount >= 200) ? millis() : boostCount ;
   }
