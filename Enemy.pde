@@ -231,7 +231,7 @@ class Boss extends Enemy_Base{
   //自機方向を中心に30度角度をつけた三方向に射撃する関数．
   private void threeWayShoot(PVector playerPos){
     PVector toPlayerVec = PVector.sub( playerPos, this.position);
-    float deg = PI / 3; //これで30度角になる．
+    float deg = PI / 6; //これで30度角になる．
 
     for(int i=0 ; i<3 ; i++){
       float tmp_deg = -deg + deg * i;
