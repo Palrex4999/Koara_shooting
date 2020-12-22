@@ -15,6 +15,8 @@ class Bullet {
   private int b_timer;
   private ArrayList<Enemy> enemies;
 
+  
+
   public Bullet(PVector pos, PVector vel, int dam, boolean player) { //敵と自分の弾
     position = pos.copy();
     velocity = vel.copy();
@@ -41,7 +43,7 @@ class Bullet {
       if (moving_pattern == 0) { //まっすぐ
         position.add(velocity);
       } else if (moving_pattern == 1) {
-        position.x += velocity.x * sin(1000.0 * millis()/1000000.0); //回転？
+        position.x += velocity.x * world.sc.sin[int(degrees(1000.0 * millis()/1000000.0))%360]; //回転？
         position.y += velocity.y;
       } else { //
         position.add(velocity);
@@ -168,8 +170,8 @@ class Bullet {
       float theta = arg;
       for (int j = 5; j > 0; j--) {
         for (int i = 0; i < bullet_num; i++) {
-          float x = 30 * cos(i * TWO_PI/bullet_num + theta) + position.x;
-          float y = 30 * sin(i * TWO_PI/bullet_num + theta) + position.y;
+          float x = 30 * world.sc.cos[int(degrees(i * TWO_PI/bullet_num + theta))%360] + position.x;
+          float y = 30 * world.sc.sin[int(degrees(i * TWO_PI/bullet_num + theta))%360] + position.y;
           drawShape(x, y, j + 50, (100 - j*10)/10.0);
         }
         theta += j/TWO_PI + 5 * PI/180;
@@ -204,7 +206,7 @@ class Bullet {
       noStroke();
       fill(c, 100);
       for (int i=0;i < bullet_num;i++) {
-        star(3 * cos(i * TWO_PI/bullet_num), 3 * sin(i * TWO_PI/bullet_num));
+        star(3 * world.sc.cos[int(degrees(i * TWO_PI/bullet_num))%360], 3 * world.sc.sin[int(degrees(i * TWO_PI/bullet_num))%360]);
       }
       popMatrix();
       arg += PI/180;
@@ -216,8 +218,8 @@ class Bullet {
       float[] r = {or, ir, or, ir, or, ir, or, ir, or, ir};
       beginShape();
       for (int i=0;i < r.length;i++) {
-        float x = r[i] * cos(i * TWO_PI/10 + arg * 2) + ox;
-        float y = r[i] * sin(i * TWO_PI/10 + arg * 2) + oy;
+        float x = r[i] * world.sc.cos[int(degrees(i * TWO_PI/10 + arg * 2))%360] + ox;
+        float y = r[i] * world.sc.sin[int(degrees(i * TWO_PI/10 + arg * 2))%360] + oy;
         vertex(x, y);
       }
       endShape(CLOSE);
