@@ -124,6 +124,10 @@ class Enemy {
       ArrayList<Bullet> pBullets = player.getBullets();
       
       for(Bullet pBullet : pBullets){
+        //モートン番号が異なる場合は衝突判定を計算しない
+        if(world.mt.getMortonNum(pBullet.getPosition())!=world.mt.getMortonNum(this.position))
+          continue;
+
         float dist = PVector.sub(pBullet.getPosition(), this.position).mag();
         // 衝突判定
         if (dist < size/2) {

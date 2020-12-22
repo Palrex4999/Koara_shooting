@@ -15,6 +15,8 @@ class Bullet {
   private int b_timer;
   private ArrayList<Enemy> enemies;
 
+  
+
   public Bullet(PVector pos, PVector vel, int dam, boolean player) { //敵と自分の弾
     position = pos.copy();
     velocity = vel.copy();

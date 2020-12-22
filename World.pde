@@ -8,6 +8,8 @@ class World {
   //アクセス修飾子を適切につけた
   //各変数にコメント追記・修正加えた
   public SinCos sc=new SinCos();//sin cosの計算済みデータ
+  public Morton mt=new Morton();//モートン番号計算用クラス
+
   private int scene = 0; // 0: スタート画面，1: ゲーム画面，2: ゲームオーバー画面
 
   //スタート画面に用いる変数
@@ -45,8 +47,9 @@ class World {
   
   //////////////////////////////////////////
 
-  ArrayList<Player> getPlayers() { return this.players; }
-  ArrayList<Enemy> getEnemies() { return this.enemies; }  
+  public ArrayList<Player> getPlayers() { return this.players; }
+  public ArrayList<Enemy> getEnemies() { return this.enemies; }
+  public Boss getBoss() { return this.boss; }  
 
   public World() {
     players = new ArrayList<Player>();

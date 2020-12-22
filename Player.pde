@@ -59,9 +59,18 @@ class Player {
   }
 
   public void hitCheck() {
+    //雑魚敵の弾の衝突判定
     for (Enemy enemy : world.getEnemies()) {
       for (int b_idx = enemy.getBullets().size()-1; b_idx > 0; b_idx--) {
         Bullet e_bullet = enemy.getBullets().get(b_idx);
+        
+        //////////////////////////////////////////
+        //2021須賀追記：
+        //モートン番号が異なる場合は衝突判定を計算しない
+        if(world.mt.getMortonNum(position)!=world.mt.getMortonNum(e_bullet.getPosition()))
+          continue;
+        //////////////////////////////////////////
+        
         float dist = PVector.sub(e_bullet.getPosition(), position).mag();
         // 衝突判定
         if (dist < size/2 && millis() - hitCount > 1000) {
@@ -71,6 +80,30 @@ class Player {
         }
       }
     }
+
+    //////////////////////////////////////////
+    //2021須賀追記：
+    //ボスの弾の衝突判定
+    Boss boss=world.getBoss();
+    for (int b_idx = boss.getBullets().size()-1; b_idx > 0; b_idx--) {
+      Bullet e_bullet = boss.getBullets().get(b_idx);
+
+      //////////////////////////////////////////
+      //2021須賀追記：
+      //モートン番号が異なる場合は衝突判定を計算しない
+      if(world.mt.getMortonNum(position)!=world.mt.getMortonNum(e_bullet.getPosition()))
+        continue;
+      //////////////////////////////////////////
+
+      float dist = PVector.sub(e_bullet.getPosition(), position).mag();
+      // 衝突判定
+      if (dist < size/2 && millis() - hitCount > 1000) {
+        int damage = e_bullet.getDamage();
+        hit(damage);
+        boss.getBullets().remove(b_idx);
+      }
+    }
+    //////////////////////////////////////////
   }
 
   // hit処理、場所のアップデートなど
