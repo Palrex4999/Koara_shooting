@@ -202,7 +202,7 @@ class World {
     for(int e_idx = 0; e_idx < enemies.size(); e_idx++) {
       Enemy enemy = enemies.get(e_idx);
       enemy.update();
-      if(enemy.isHitted()){ //弾がヒットしたら
+      if(enemy.is_hit){ //弾がヒットしたら
         score+=10;
       }
       if(enemy.is_dead){ //敵が死んだら
@@ -218,6 +218,7 @@ class World {
       boss.update();
       if (boss.is_dead){ // Bossが倒されたらisGameOver_gameをtrueにする
         isGameOver_game = true;
+        score+=10000;//2021須賀追加：Bossが倒されたら10000点
         beated++;
       }else{
         boss.draw();

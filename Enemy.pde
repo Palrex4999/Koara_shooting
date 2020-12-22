@@ -21,7 +21,8 @@ class Enemy {
   private PVector velocity2 = new PVector(0,0);//動きパターン2の速度
   private long lastHitTime_ms;  //最後にBulletに当たった時刻(ms)
 
-  public boolean is_dead;
+  public boolean is_hit;//2021須賀追加：弾に当たっているかどうか
+  public boolean is_dead;//死んでいるかどうか
 
   final int INVINCIBLE_TERM_MS = 1000;  // 無敵期間(ms)
 
@@ -87,11 +88,14 @@ class Enemy {
     int c = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*50.0); //±50
 
     // ヒット直後，1sec間は100ms毎に点滅を繰り返す
+    /*
     if(isInvincible() && (millis() / 100) % 2 == 0){
       fill(0, 0, 0, 0);
     }else{
       fill(200+c,50-c,50-c);
     }
+    */
+    fill(200+c,50-c,50-c);
     
     noStroke();
     circle(position.x,position.y,size+r);
@@ -103,7 +107,8 @@ class Enemy {
   // Player の Bullet に当たると Enemy の hp を1削る．
   // 連続攻撃に対処するため，攻撃を受けた後は一定時間攻撃を受けない
   private void hit(){
-    if(!isHitted()) return;
+    is_hit=isHitted();
+    if(!is_hit)return;
     //if(!isInvincible()){
       lastHitTime_ms = millis();
       is_dead = (--hp == 0);
