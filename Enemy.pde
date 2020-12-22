@@ -55,7 +55,6 @@ abstract class Enemy_Base {
   }
 
   // Player の Bullet に当たると Enemy の hp を1削る．
-  // 連続攻撃に対処するため，攻撃を受けた後は一定時間攻撃を受けない
   protected void hit(){
     is_hit=isHitted();
     if(!is_hit)return;
