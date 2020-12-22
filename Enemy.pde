@@ -4,8 +4,9 @@ Enemy_Baseをextendして敵キャラを作っていく
 move()とshoot()はOveride
 敵キャラ固有の弾の撃ち方は拡張したクラスで今のところ書く
 
-
+アクセス修飾子もまだ
 */
+
 abstract class Enemy_Base {
   //フィールドはとりあえずここにおいてあるけど、移動するかも？
   PVector position;
@@ -61,7 +62,6 @@ abstract class Enemy_Base {
     //if(!isInvincible()){
       lastHitTime_ms = millis();
       is_dead = (--hp == 0);
-      divideSelf();
     //}
   }
 
@@ -133,11 +133,10 @@ abstract class Enemy_Base {
 
 } 
 
-
 class Enemy extends Enemy_Base{
   public Enemy(PVector pos) {
     super(pos);
-    sethp(10);
+    sethp(3);
     setsize(100);
   }
   //Override
@@ -194,7 +193,6 @@ class Enemy extends Enemy_Base{
   public void keyPressed(int key) {}
   public void mousePressed() {}
 }
-
 
 class Boss extends Enemy_Base{
   private boolean isShooted_Nway;
