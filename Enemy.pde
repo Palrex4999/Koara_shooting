@@ -1,10 +1,13 @@
-// 敵を実装してください。ゲームバランスなどを考えた、"良い"敵の実装をお願いします。
-// 
-// 出現タイミングなどは、worldクラスで統制することになっているので、
-// 変更したい場合は、適宜worldクラスチームと相談してください。
-// 勝手に変更するとmerge時にコンフリクトが起きる可能性があるので、ご注意ください。
+/*
+Enemy_Baseをextendして敵キャラを作っていく
 
+move()とshoot()はOveride
+敵キャラ固有の弾の撃ち方は拡張したクラスで今のところ書く
+
+
+*/
 abstract class Enemy_Base {
+  //フィールドはとりあえずここにおいてあるけど、移動するかも？
   PVector position;
   protected int hp, size;
   protected ArrayList<Bullet> bullets;
@@ -17,6 +20,7 @@ abstract class Enemy_Base {
   protected PVector velocity2 = new PVector(0,0);//動きパターン2の速度
   protected long lastHitTime_ms;  //最後にBulletに当たった時刻(ms)
   public boolean is_dead; //死んだかどうか
+  public boolean is_hit; //2021須賀追加:たまに当たっているかどうか
   final int INVINCIBLE_TERM_MS = 1000;  // 無敵期間(ms)
 
   public Enemy_Base (PVector pos) {
@@ -52,16 +56,13 @@ abstract class Enemy_Base {
   // Player の Bullet に当たると Enemy の hp を1削る．
   // 連続攻撃に対処するため，攻撃を受けた後は一定時間攻撃を受けない
   protected void hit(){
-    if(!isHitted()) return; //当たってなかったらreturn
-    lastHitTime_ms = millis();
-    is_dead = (--hp == 0);
-    /*
-    if(!isInvincible()){
+    is_hit=isHitted();
+    if(!is_hit)return;
+    //if(!isInvincible()){
       lastHitTime_ms = millis();
       is_dead = (--hp == 0);
       divideSelf();
-    }
-    */
+    //}
   }
 
   // Bullet に当たったかを判定する
@@ -70,6 +71,10 @@ abstract class Enemy_Base {
       ArrayList<Bullet> pBullets = player.getBullets();
       
       for(Bullet pBullet : pBullets){
+        //モートン番号が異なる場合は衝突判定を計算しない
+        if(world.mt.getMortonNum(pBullet.getPosition())!=world.mt.getMortonNum(this.position))
+          continue;
+
         float dist = PVector.sub(pBullet.getPosition(), this.position).mag();
         // 衝突判定
         if (dist < size/2) {
@@ -91,8 +96,9 @@ abstract class Enemy_Base {
   // Enemy を描画する関数
   public void draw() {
 
-    int r = (int) (sin((float)millis()/heartbeat_freq + heartbeat_phase)*10.0);
-    int c = (int) (sin((float)millis()/heartbeat_freq + heartbeat_phase)*50.0); //±50
+    int r = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*10.0);
+    int c = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*50.0); //±50
+
 
     fill(200+c,50-c,50-c);
     noStroke();
@@ -114,11 +120,12 @@ abstract class Enemy_Base {
         //Enemyを吹っ飛ばなくするために，新たにbullet用の座標クラスを作成しました．
         b.update(); 
         if(b.getPosition().x < 0 || b.getPosition().x > width
-        || b.getPosition().y < 0 || b.getPosition().y > height)
+        || b.getPosition().y < 0 || b.getPosition().y > height){
           bullets.remove(b_idx);
+        }
         else 
           b.draw();
-    }
+      }
   }
 
   protected ArrayList<Bullet> getBullets() { return bullets; } //弾の配列を得る
@@ -154,7 +161,7 @@ class Enemy extends Enemy_Base{
   //自機方向を中心に30度角度をつけた三方向に射撃する関数．
   private void threeWayShoot(PVector playerPos){
     PVector toPlayerVec = PVector.sub( playerPos, this.position);
-    float deg = PI / 3; //これで30度角になる．
+    float deg = PI / 6; //これで30度角になる．
 
     for(int i=0 ; i<3 ; i++){
       float tmp_deg = -deg + deg * i;
@@ -211,7 +218,7 @@ class Boss extends Enemy_Base{
   }
   //Override
   public void move(){//ボスの動き
-    position.y = size+(size-10)*sin(radians(millis())/10);
+    position.y = size+(size-10)*world.sc.sin[millis()/10%360];
     position.x += movespeed;
     if(position.x > width || position.x < 0){
       movespeed *= -1;
