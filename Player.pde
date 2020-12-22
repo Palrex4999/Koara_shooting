@@ -85,9 +85,9 @@ class Player {
   public void shoot() {
     float bulletVel = 3.0;
     for (int i = -1; i <= 1; i++) {
-      float theta = -PI/2 + i*PI/6.0 + this.angle;
-      float xDir = cos(theta) * bulletVel;
-      float yDir = sin(theta) * bulletVel;
+      int theta = int(degrees(3*PI/2 + i*PI/6.0 + this.angle))%360;
+      float xDir = world.sc.cos[theta] * bulletVel;
+      float yDir = world.sc.sin[theta] * bulletVel;
       bullets.add(new Bullet(this.position.copy(), new PVector(xDir, yDir), 10, true));
     }
     shootSE.rewind();
@@ -177,7 +177,7 @@ class Player {
   private void drawDebri(int s){
     for(int idx = 0; idx < 6; idx++){
       fill(255, 255, 0);
-      ellipse(s/10.0*debris[idx].y*cos(debris[idx].x), s/10.0*debris[idx].y*sin(debris[idx].x),
+      ellipse(s/10.0*debris[idx].y*world.sc.cos[int(degrees(debris[idx].x))%360], s/10.0*debris[idx].y*world.sc.sin[int(debris[idx].x)%360],
       10, 10);
     }
   }

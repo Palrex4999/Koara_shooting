@@ -83,8 +83,8 @@ class Enemy {
   // Enemy を描画する関数
   public void draw() {
 
-    int r = (int) (sin((float)millis()/heartbeat_freq + heartbeat_phase)*10.0);
-    int c = (int) (sin((float)millis()/heartbeat_freq + heartbeat_phase)*50.0); //±50
+    int r = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*10.0);
+    int c = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*50.0); //±50
 
     // ヒット直後，1sec間は100ms毎に点滅を繰り返す
     if(isInvincible() && (millis() / 100) % 2 == 0){
@@ -104,11 +104,11 @@ class Enemy {
   // 連続攻撃に対処するため，攻撃を受けた後は一定時間攻撃を受けない
   private void hit(){
     if(!isHitted()) return;
-    if(!isInvincible()){
+    //if(!isInvincible()){
       lastHitTime_ms = millis();
       is_dead = (--hp == 0);
       divideSelf();
-    }
+    //}
   }
   
   // 内藤担当箇所
@@ -155,7 +155,9 @@ class Enemy {
   //自機方向を中心に30度角度をつけた三方向に射撃する関数．
   private void threeWayShoot(PVector playerPos){
     PVector toPlayerVec = PVector.sub( playerPos, this.position);
-    float deg = PI / 3; //これで30度角になる．
+    
+    //2021須賀修正分：PI/3→PI/6
+    float deg = PI / 6; //これで30度角になる．
 
     for(int i=0 ; i<3 ; i++){
       float tmp_deg = -deg + deg * i;
@@ -200,7 +202,7 @@ class Enemy {
   //draw内にて呼んでいます．
   //梶本コメント：これはBulletクラス中で書いたほうが良い？Bulletチームに依頼？
   private void drawBullets(){
-
+      
       //for(int b_idx = 0; b_idx < bullets.size(); b_idx++) {
       for(int b_idx = bullets.size()-1; b_idx >= 0 ; b_idx--) { //removeがある場合のリストの扱い(Kajimoto)
         Bullet b = bullets.get(b_idx);
@@ -211,8 +213,9 @@ class Enemy {
         //Enemyを吹っ飛ばなくするために，新たにbullet用の座標クラスを作成しました．
         b.update(); 
         if(b.getPosition().x < 0 || b.getPosition().x > width
-        || b.getPosition().y < 0 || b.getPosition().y > height)
+        || b.getPosition().y < 0 || b.getPosition().y > height){
           bullets.remove(b_idx);
+        }
         else 
           b.draw();
     }
@@ -246,7 +249,7 @@ class Boss extends Enemy{
   }
   
   public void move(){//ボスの動き
-    position.y = size+(size-10)*sin(radians(millis())/10);
+    position.y = size+(size-10)*world.sc.sin[millis()/10%360];
     position.x += movespeed;
     if(position.x > width || position.x < 0){
       movespeed *= -1;
