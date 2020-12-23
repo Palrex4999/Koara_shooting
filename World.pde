@@ -169,7 +169,7 @@ class World {
     players.add(p);
     isGameOver_game = false;
     //ボスの生成
-    boss = new Boss(new PVector(random(width), random(height)));
+    boss = new Boss(new PVector(random(width), random(height))); 
     boss_in = false;
 
     bgm_game.rewind();
@@ -195,7 +195,7 @@ class World {
     lastHP_game = 0;
     //120フレームごとに敵を追加
     if(frameCount%120==0 && !boss_in) {
-      Enemy e = new Enemy(new PVector(random(width), random(height)));
+      Enemy e = new Enemy(new PVector(random(width, width*1.2), random(height))); //画面外に生成
       enemies.add(e);
     }
     //敵の毎フレームごとの処理
