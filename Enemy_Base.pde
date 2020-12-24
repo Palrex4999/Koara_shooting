@@ -32,7 +32,7 @@ abstract class Enemy_Base {
     
     moveselect = int(random(2));
     moveflag = int(random(2,4));
-    velocity = new PVector(random(0,2), random(1,3));
+    velocity = new PVector(random(-3,-1), 0); //矢野変更:Enemyの速さを変更
     
     for(Player player : world.getPlayers()){
       velocity2 = PVector.sub(player.getPosition(),position).div(100);

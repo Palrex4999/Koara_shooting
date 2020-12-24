@@ -6,12 +6,12 @@ class Enemy extends Enemy_Base{
   }
   //Override
   public void move(){
-    if(moveselect == 0){//動きパターン1　まっすぐ～ギザギザ
-      if(millis()/1000 % moveflag == 0){
+    if(moveselect == 0){//矢野変更:動きパターン1　まっすぐ
+      /*if(millis()/1000 % moveflag == 0){*/
         position.add(velocity);
-      }else{
+       /*}else{
         position.add(-velocity.x ,velocity.y);
-      }
+      }*/
     }else{//動きパターン2　Playerに向けて動く
       position.add(velocity2);
     }
@@ -70,22 +70,28 @@ class Boss extends Enemy_Base{
     super(pos);
     sethp(10);
     setsize(150);
-    movespeed = 2;
+    movespeed = -1;
     isShooted_Nway = false;
     numShoot_NWay = 40;
     bulletSpeed_Nway =int(random(3,6));
-    shootTiming_Nway = int(random(200,400));
+    shootTiming_Nway = int(random(1000,2000)); //矢野変更:タイミングを変更
     super.shootingTiming_ms= int(random(50,200));
     super.heartbeat_phase = random(2.0*PI);
     super.heartbeat_freq = 400.0;
   }
   //Override
   public void move(){//ボスの動き
-    position.y = size+(size-10)*world.sc.sin[millis()/10%360];
-    position.x += movespeed;
+    //position.y = size+(size-10)*world.sc.sin[millis()/10%360];
+    //矢野変更:ボスが右から入ってきて静止する
+    if(position.x > width * 0.7){
+      position.x += movespeed;
+    }
+    /*
+    position.x += movespeed; //
     if(position.x > width || position.x < 0){
       movespeed *= -1;
     }
+    */
   }
 
   //Override
