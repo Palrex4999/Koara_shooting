@@ -33,7 +33,7 @@ class World {
   private boolean isGameOver_game = false;//ゲームオーバーかどうか
 
   private PVector player_p;  //player座標
-  private PImage back; //プレイ画面の背景
+  //private PImage back; //プレイ画面の背景
   
 
   //ゲームオーバー画面に用いる変数
@@ -43,6 +43,12 @@ class World {
   private Minim minim;
   private AudioPlayer bgm_start, bgm_game, bgm_over;
   private AudioPlayer sound_pikin;
+
+  //背景スクロール2020矢野追加
+  final int SCROLL_SPEED = 2; //スクロールスピード
+  private PImage haikei; //スクロール用画像
+  private int sx = 0; //切り出し位置
+  private int sy = 0; //切り出し位置
 
   
   //////////////////////////////////////////
@@ -80,8 +86,8 @@ class World {
 
   void init() {
     scene = 0;
-    back = loadImage("stars.jpg");
-    back.resize(back.width+500, back.height+500);
+    haikei = loadImage("stars.jpg");
+    //back.resize(back.width+500, back.height+500);
     init_start();
   }
 
@@ -189,7 +195,9 @@ class World {
 
   private void draw_game() {
     // ゲーム画面での毎フレームの処理
-    image(back, -player_p.x, -player_p.y);
+    //image(back, -player_p.x, -player_p.y);
+    PImage back = getDisplayImage(); //2020矢野追加
+    background(back);
     // ゲーム画面での毎フレームの処理
 
     lastHP_game = 0;
@@ -424,4 +432,44 @@ class World {
     sound_pikin.close();
     minim.stop();
   }
+
+  //---------------------------------------------
+  //スクロール用画像から、画面に表示したい部分を
+  //切り取って、表示用画像として生成する処理
+  //---------------------------------------------
+  PImage  getDisplayImage(){
+    int  cutWidth = width;  //切り出せる幅
+    int  overWidth = 0;     //飛び出し幅（解説の★幅）
+    
+    //表示用画像領域を作成
+    PImage  map = createImage(width, height, ARGB);
+  
+    //切り出したい画像の幅が、スクロール用画像の左端からはみ出した時
+    if(sx + width > haikei.width){
+      //切り出せる幅と、飛び出した幅を計算
+      overWidth = (sx + width) - haikei.width;  
+      cutWidth = width - overWidth;
+    }
+  
+    //スクロール用画像から、一部を切り出して、貼り付ける
+    PImage  cutLeftImg = haikei.get( sx, 0, cutWidth, height );
+    map.set( 0, 0, cutLeftImg );
+  
+    //もし飛び出していたら、スクロール用画像の左端から、
+    //飛び出し幅分の画像を切りとって、mapの右側に貼り付ける
+    if(overWidth > 0){
+      PImage  cutRightImg = haikei.get( 0, 0, overWidth, height );
+      map.set( cutWidth, 0, cutRightImg );
+    }
+  
+    //次の切り出し位置を、右にずらす（スクロールする）
+    sx = sx + SCROLL_SPEED;
+    if(sx >= haikei.width){
+      //切り出し位置が、スクロール用画像の右端になったので先頭に戻す
+      sx = 0;
+    }
+  
+    //作成した表示用画像を返却する
+    return( map );
+}
 }
