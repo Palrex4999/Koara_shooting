@@ -169,7 +169,7 @@ class World {
     players.add(p);
     isGameOver_game = false;
     //ボスの生成
-    boss = new Boss(new PVector(random(width), random(height))); 
+    boss = new Boss(new PVector(width*1.2, height/2));  //矢野変更：ボスの位置を画面外右に
     boss_in = false;
 
     bgm_game.rewind();
