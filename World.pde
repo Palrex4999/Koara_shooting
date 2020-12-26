@@ -45,7 +45,7 @@ class World {
   private AudioPlayer sound_pikin;
 
   //背景スクロール2020矢野追加
-  final int SCROLL_SPEED = 2; //スクロールスピード
+  final int SCROLL_SPEED = 1; //スクロールスピード
   private PImage haikei; //スクロール用画像
   private int sx = 0; //切り出し位置
   private int sy = 0; //切り出し位置
@@ -86,7 +86,7 @@ class World {
 
   void init() {
     scene = 0;
-    haikei = loadImage("stars.jpg");
+    haikei = loadImage("night_sky.png");
     //back.resize(back.width+500, back.height+500);
     init_start();
   }
