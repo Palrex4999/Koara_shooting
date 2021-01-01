@@ -20,7 +20,9 @@ class World {
   private boolean shootingStarOn_start = false; //流れ星を流すか
   private int shootingStarX_start, shootingStarY_start;  //流れ星の位置座標
 
+  private PImage titleImg_start_back; //スタート画面のタイトル画像
   private PImage titleImg_start; //スタート画面のタイトル画像
+  private PImage pressEnter;
 
   //ゲーム画面に用いる変数
   private ArrayList<Player> players; //プレイヤー
@@ -106,8 +108,10 @@ class World {
     }
 
     shootingStarOn_start = false;
-
+    titleImg_start_back = loadImage("start_image.jpg");
     titleImg_start = loadImage("title.png");
+    pressEnter = loadImage("pressEnter.png");
+    
     //BGM
     bgm_start.rewind();
     bgm_start.loop();
@@ -116,6 +120,10 @@ class World {
   private void draw_start() {
     // スタート画面での毎フレームの処理
     background(25, 25, 50);
+    
+    //タイトル画像を表示
+    image(titleImg_start_back, 0, 0);
+
     //星を描画
     for(int i=0; i<starsNum_start; i++){
       int brightness = (int)random(100, 255);
@@ -146,14 +154,15 @@ class World {
         shootingStarOn_start = true;
       }
     }
-    //タイトル画像を表示
-    image(titleImg_start, width/2-300, 70, 600, 320);
 
+    /*
     textAlign(CENTER);
-    fill(0, 255, 255, textAlpha_start);
+    fill(221, 74, 197, textAlpha_start);
     textSize(30);
     text("Press ENTER", width/2-100, 450, 200, 50);
-    
+    */
+    image(titleImg_start, width/2-300, 70, 600, 320);
+    image(pressEnter, width/2-100, 400);
     //文字の透明度を変更
     
     //////////////////////////////////////////
