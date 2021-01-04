@@ -1,64 +1,20 @@
-// 弾丸の実装をしてください。追従システムとかがあるといいのかも？
+/* 2021須賀修正
+ * 抽象クラスBulletを継承して弾の種類別にクラスを持つように修正
+ */
 
-class Bullet {
-  private PVector position;
-  private PVector velocity;
-  private int damage;
-  private boolean is_player;
-  private int moving_pattern;
-  private PVector init_position;
-  private int counter;
-  private SubBullet subBullet;
-  
-  private boolean explode;
-  private boolean homing;
-  private int b_timer;
-  private ArrayList<Enemy> enemies;
-
-  
-
-  public Bullet(PVector pos, PVector vel, int dam, boolean player) { //敵と自分の弾
-    position = pos.copy();
-    velocity = vel.copy();
-    damage = dam;
-    is_player = player;
-    moving_pattern = floor(random(0, 100));
-    init_position = new PVector(pos.x, pos.y);
-    counter = 0;
-    if (is_player) {
-      subBullet = new PlayerSubBullet(int(random(1, 5)));
-    } else {
-      subBullet = new EnemySubBullet(int(random(1, 5)));
-    }
-    explode = false;
-    homing = false;
-    b_timer = 0;
+//標準弾
+class Bul_Normal extends Bullet {
+  //Player用のコンストラクタ
+  public Bul_Normal (PVector pos, PVector vel) {
+    super(pos,vel,10,true);
   }
 
-  public void update() {
-    if (is_player) {
-      position.x += velocity.x;
-      position.y += velocity.y;
-    } else {
-      if (moving_pattern == 0) { //まっすぐ
-        position.add(velocity);
-      } else if (moving_pattern == 1) {
-        position.x += velocity.x * world.sc.sin[int(degrees(1000.0 * millis()/1000000.0))%360]; //回転？
-        position.y += velocity.y;
-      } else { //
-        position.add(velocity);
-        ArrayList<Player> players = world.getPlayers();
-        for (Player p : players) {
-          PVector p_pos = p.getPosition().copy();
-          velocity.add(p_pos.sub(position).div(100000.0).mult(noise(init_position.x + random(0.1, 0.5), init_position.y)));
-        }
-      }
-    }
-
-    subBullet.draw();
-    counter++;
+  //Enemy用のコンストラクタ
+  public Bul_Normal (PVector pos, PVector vel, int dam,boolean player) {
+    super(pos,vel,dam,player);
   }
-
+  
+  @Override
   public void draw() {
     noStroke();
     if(is_player){ //プレイヤー
@@ -75,61 +31,122 @@ class Bullet {
         circle(position.x, position.y+i, 5+(i*i));
       } 
     }
-    if(explode){
-      explosion(5, 30);
-    }
-    if(homing){
-      homing();
-    }
-    
   }
+}
 
-  public PVector getPosition() {
-    return position;
+//高速弾
+class Bul_Boost extends Bullet {
+  //Player用のコンストラクタ
+  public Bul_Boost (PVector pos, PVector vel) {
+    super(pos,new PVector(vel.x*3,vel.y*3),5,true);
   }
-
-  public int getDamage() {
-    return damage;
-  }
-
-  void keyPressed(int key) {
-    if(key == 'q'){
-      moving_pattern = 3;
-      println("boost");
-      velocity.x *= 1.3;
-      velocity.y *= 1.3;
-    }
-    if(key == 'r'){
-      moving_pattern = 3;
-      println("explosion");
-      explode = true;
-    }
-    if(key == 'f'){
-      moving_pattern = 3;
-      println("homing");
-      homing = !homing;
+  
+  @Override
+  public void draw() {
+    noStroke();
+    if(is_player){ //プレイヤー
+      for(int i=-6; i<=6; i=i+6){
+        fill(255, 0, 0, 150);
+        circle(position.x+i, position.y, 12);
+        circle(position.x, position.y+i, 12);
+      }
+    }else{ //敵
+      if(((millis())%400) > 200) fill(0, 0, 155, 400 - ((millis())%400));
+      else fill(0, 0, 155, (millis())%200);
+      for(int i=-4; i<=4; i=i+2){
+        circle(position.x+i, position.y, 5+(i*i));
+        circle(position.x, position.y+i, 5+(i*i));
+      } 
     }
   }
+}
 
-//爆発して消える
-  void explosion(int speed, int time){
+//爆発弾
+class Bul_Explosion extends Bullet{
+  private int cnt=0;//爆発するまでのカウント
+  private int b_timer;//爆発時間のタイマー
+  private int b_range;//爆発範囲
+
+  //Player用のコンストラクタ
+  public Bul_Explosion (PVector pos, PVector vel) {
+    super(pos,new PVector(vel.x*0.8,vel.y*0.8),0,true);
+  }
+  
+  @Override
+  public void draw() {
+    noStroke();
+    if(is_player){ //プレイヤー
+      for(int i=-6; i<=6; i=i+6){
+        fill(255, 0, 0, 150);
+        circle(position.x+i, position.y, 12);
+        circle(position.x, position.y+i, 12);
+      }
+    }else{ //敵
+      if(((millis())%400) > 200) fill(0, 0, 155, 400 - ((millis())%400));
+      else fill(0, 0, 155, (millis())%200);
+      for(int i=-4; i<=4; i=i+2){
+        circle(position.x+i, position.y, 5+(i*i));
+        circle(position.x, position.y+i, 5+(i*i));
+      } 
+    }
+
+    //発射後30フレーム後爆発開始
+    if(cnt<30)cnt+=1;
+    else{
+      this.damage=50;
+      explosion(5,30);
+    }
+  }
+
+  //爆発して消える
+  private void explosion(int speed, int time){
     velocity.x = 0;
     velocity.y = 0;
-    damage += speed;
+    b_range += speed;
     b_timer++;
     if(b_timer > time){
-      if(damage > 20){
-        damage -= 30;
+      if(b_range > 20){
+        b_range -= 30;
       }else{
-        damage = 0;
+        b_range = 0;
+        this.damage = 0;
         velocity.y = 500;
       }
     }
     fill(255,100, 0);
-    circle(this.position.x, this.position.y, this.damage);
+    circle(this.position.x, this.position.y, b_range);
   }
-    //一番近い敵にホーミング
-  void homing(){
+}
+
+//追尾弾
+class Bul_Homing extends Bullet{
+  //Player用のコンストラクタ
+  public Bul_Homing (PVector pos, PVector vel) {
+    super(pos,vel,5,true);
+  }
+  
+  @Override
+  public void draw() {
+    noStroke();
+    if(is_player){ //プレイヤー
+      for(int i=-6; i<=6; i=i+6){
+        fill(255, 0, 0, 150);
+        circle(position.x+i, position.y, 12);
+        circle(position.x, position.y+i, 12);
+      }
+    }else{ //敵
+      if(((millis())%400) > 200) fill(0, 0, 155, 400 - ((millis())%400));
+      else fill(0, 0, 155, (millis())%200);
+      for(int i=-4; i<=4; i=i+2){
+        circle(position.x+i, position.y, 5+(i*i));
+        circle(position.x, position.y+i, 5+(i*i));
+      } 
+    }
+    homing();
+  }
+
+  //一番近い敵にホーミング
+  private void homing(){
     PVector tmpVec = new PVector(0, 0);
     PVector minVec = velocity;
     float tmpDistance;
@@ -143,86 +160,19 @@ class Bullet {
         minVec = tmpVec;
       }
     }
+
+    //////////////////////////////////////////
+    //2021須賀追記：
+    //bossもホーミングの対象にする
+    Boss boss=world.getBoss();
+    tmpVec = PVector.sub(boss.position, this.position);
+    tmpDistance = PVector.dist(boss.position, this.position);
+    if(minDistance > tmpDistance){
+      minDistance = tmpDistance;
+      minVec = tmpVec;
+    }
+    //////////////////////////////////////////
+
     velocity = PVector.mult(minVec.normalize(), velocity.mag());
-  }
-
-
- abstract class SubBullet {
-    protected int bullet_num;
-    public abstract void draw();
-  }
-  // 弾の周りを飛ぶ "子弾"
-  // 特に攻撃はしない. 演出用
-  class EnemySubBullet extends SubBullet {
-    // まわりに飛ばす弾の数
-    protected float arg;
-    protected color c;
-
-    public EnemySubBullet(int bn) {
-      bullet_num = bn;
-      arg = 0;
-      colorMode(HSB);
-      c = color(random(80, 255), 255, 255);
-      colorMode(RGB);
-    }
-
-    public void draw() {
-      float theta = arg;
-      for (int j = 5; j > 0; j--) {
-        for (int i = 0; i < bullet_num; i++) {
-          float x = 30 * world.sc.cos[int(degrees(i * TWO_PI/bullet_num + theta))%360] + position.x;
-          float y = 30 * world.sc.sin[int(degrees(i * TWO_PI/bullet_num + theta))%360] + position.y;
-          drawShape(x, y, j + 50, (100 - j*10)/10.0);
-        }
-        theta += j/TWO_PI + 5 * PI/180;
-      }
-      arg += PI / 180;
-    }
-
-    protected void drawShape(float x, float y, float alpha, float s) {
-      noStroke();
-      fill(c, alpha);
-      circle(x, y, s);
-    }
-  }
-
-  class PlayerSubBullet extends SubBullet {
-    protected color c;
-    protected float arg;
-
-    public PlayerSubBullet(int bn) {
-      bullet_num = bn;
-      arg = 0.0;
-      colorMode(HSB);
-      c = color(100 + random(150), 255, 255);
-      colorMode(RGB);
-    }
-
-    public void draw() {
-      pushMatrix();
-      translate(position.x, position.y);
-      scale(8);
-      rotate(arg);
-      noStroke();
-      fill(c, 100);
-      for (int i=0;i < bullet_num;i++) {
-        star(3 * world.sc.cos[int(degrees(i * TWO_PI/bullet_num))%360], 3 * world.sc.sin[int(degrees(i * TWO_PI/bullet_num))%360]);
-      }
-      popMatrix();
-      arg += PI/180;
-    }
-
-    protected void star(float ox, float oy) {
-      float or = 1;
-      float ir = 0.6;
-      float[] r = {or, ir, or, ir, or, ir, or, ir, or, ir};
-      beginShape();
-      for (int i=0;i < r.length;i++) {
-        float x = r[i] * world.sc.cos[int(degrees(i * TWO_PI/10 + arg * 2))%360] + ox;
-        float y = r[i] * world.sc.sin[int(degrees(i * TWO_PI/10 + arg * 2))%360] + oy;
-        vertex(x, y);
-      }
-      endShape(CLOSE);
-    }
   }
 }
