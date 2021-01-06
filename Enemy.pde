@@ -9,7 +9,7 @@ class Enemy extends Enemy_Base{
     if(moveselect == 0){//矢野変更:動きパターン1　まっすぐ
       /*if(millis()/1000 % moveflag == 0){*/
         position.add(velocity);
-       /*}else{
+      /*}else{
         position.add(-velocity.x ,velocity.y);
       }*/
     }else{//動きパターン2　Playerに向けて動く
@@ -34,7 +34,7 @@ class Enemy extends Enemy_Base{
       
       PVector bulletPos = new PVector();
       bulletPos = this.position.copy();
-      bullets.add(new Bullet(bulletPos,tmp_Vec,damage,false));
+      bullets.add(new Bul_Normal(bulletPos,tmp_Vec,damage,false));
       //bullets.add(new Bullet(position,tmp_Vec,damage)); //とりあえず動かすために戻しました。後でfalse入れる
     }
   }
@@ -112,7 +112,7 @@ class Boss extends Enemy_Base{
       
       PVector bulletPos = new PVector();
       bulletPos = this.position.copy();
-      bullets.add(new Bullet(bulletPos,tmp_Vec,damage,false));
+      bullets.add(new Bul_Normal(bulletPos,tmp_Vec,damage,false));
       //bullets.add(new Bullet(position,tmp_Vec,damage)); //とりあえず動かすために戻しました。後でfalse入れる
     }
   }
@@ -143,7 +143,7 @@ class Boss extends Enemy_Base{
       int damage = int(random(5,10));//とりあえず設定．player側の体力と相談？
       PVector bulletPos = new PVector();
       bulletPos = this.position.copy();
-      super.bullets.add(new Bullet(bulletPos,tmp_Vec,damage,false));
+      super.bullets.add(new Bul_Normal(bulletPos,tmp_Vec,damage,false));
       //super.bullets.add(new Bullet(position,tmp_Vec,damage));//後々falseを入れて修正．
 
     }
@@ -151,7 +151,7 @@ class Boss extends Enemy_Base{
   }
 
   private void Nwayshooter_addtiming(int timing_ms){
-     int time = millis() / timing_ms;
+    int time = millis() / timing_ms;
 
     if(time % 2 == 0&& !this.isShooted_Nway){
       NwayShoot(numShoot_NWay,bulletSpeed_Nway);

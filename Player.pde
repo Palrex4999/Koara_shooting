@@ -6,6 +6,8 @@ class Player {
   private int life; //ライフ
   private int size; //プレイヤーの大きさ
   private ArrayList<Bullet> bullets; //弾
+  private int bultype=1; //弾の種類
+  private int bulway=1; //発射する弾のWAY数:1→3WAY 0→1WAY
   private float angle; //プレイヤーの角度
 
   //////////////////////////////////////////
@@ -109,6 +111,25 @@ class Player {
     //////////////////////////////////////////
   }
 
+  //////////////////////////////////////////
+  //2021須賀作成：
+  //弾の種類の切り替え
+  private Bullet setBullet(PVector pos, PVector vel){
+    switch (bultype) {
+      case 1:
+        return new Bul_Normal(pos,vel);
+      case 2:
+        return new Bul_Boost(pos,vel);
+      case 3:
+        return new Bul_Explosion(pos,vel);
+      case 4:
+        return new Bul_Homing(pos,vel);
+      default :
+        return new Bul_Normal(pos,vel);
+    }
+  }
+  //////////////////////////////////////////
+
   // hit処理、場所のアップデートなど
   public void update() {
     changePosition();
@@ -120,11 +141,11 @@ class Player {
   // 弾丸を発射する関数
   public void shoot() {
     float bulletVel = 3.0;
-    for (int i = -1; i <= 1; i++) {
+    for (int i = -bulway; i <= bulway; i++) {
       int theta = int(degrees(3*PI/2 + i*PI/6.0 + this.angle))%360;
       float xDir = world.sc.cos[theta] * bulletVel;
       float yDir = world.sc.sin[theta] * bulletVel;
-      bullets.add(new Bullet(this.position.copy(), new PVector(xDir, yDir), 10, true));
+      bullets.add(setBullet(this.position.copy(), new PVector(xDir, yDir)));
     }
     shootSE.rewind();
     shootSE.play();
@@ -263,15 +284,32 @@ class Player {
 
   private boolean key_a, key_w, key_d, key_s;
   public void keyPressed(int key) {
-    
-    for(Bullet bullet : this.bullets)
-      bullet.keyPressed(key);
-
 
     if (key == 'a') key_a = true;
     if (key == 'w') key_w = true;
     if (key == 'd') key_d = true;
     if (key == 's') key_s = true;
+
+    if(key == 'e'){
+      bultype=1;
+      bulway=1;
+      println("normal");
+    }
+    if(key == 'q'){
+      bultype=2;
+      bulway=0;
+      println("boost");
+    }
+    if(key == 'r'){
+      bultype=3;
+      bulway=0;
+      println("explosion");
+    }
+    if(key == 'f'){
+      bultype=4;
+      bulway=0;
+      println("homing");
+    }
   }
   
   public void keyReleased(int key){
