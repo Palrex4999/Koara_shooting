@@ -270,10 +270,10 @@ class World {
   }
 
  void drawLife(Player player){ //残りライフの描画
-       fill(255);
-       textSize(30);
-       text("LIFE:"+player.getLife(),100,70);
- }
+      fill(255);
+      textSize(30);
+      text("LIFE:"+player.getLife(),100,70);
+  }
 
  void drawScore(){ //スコアの表示
     fill(255);
