@@ -22,6 +22,8 @@ class Player {
 
   public boolean is_dead; //プレイヤーの状態
   
+  private PImage cat; //2020矢野追加 プレイヤー画像
+
   Minim minim;
   AudioPlayer shootSE, hitSE, clushSE;
 
@@ -31,6 +33,7 @@ class Player {
     size = 30;
     HP = 80;
     life = 3;
+    cat = loadImage("data/cat.png");
     minim = new Minim(getPApplet());    
     shootSE = minim.loadFile("shoot1.mp3");
     hitSE = minim.loadFile("glass-break4.mp3");
@@ -161,9 +164,8 @@ class Player {
     if(clushCount!=-1 && millis() - clushCount < 2000)
       drawDebri(millis() - clushCount);
     //////////////////////////////////////////
-    
+    /* 2020矢野変更 プレイヤーを画像に変更
     rotate(this.angle);
-    
     noStroke();
     //炎のゆらぎ
     fill(255, 100, 0);
@@ -174,7 +176,10 @@ class Player {
     // 機体の絵
     if(millis() - shootCount <= 100) translate(0, (millis() - shootCount) / 5);
     drawAircraft(this.size);
-    
+    */
+
+    //2020矢野追加:プレイヤーの画像
+    image(cat, -60, -50, 100, 100);
     pop();
     
     for (int b_idx = 0; b_idx < this.bullets.size(); b_idx++) {
