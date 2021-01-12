@@ -1,8 +1,23 @@
 class Enemy extends Enemy_Base{
+  private PImage img;
   public Enemy(PVector pos) {
     super(pos);
     sethp(3);
     setsize(100);
+    img = loadImage("data/mouse_white.png");
+  }
+
+  //Override
+  // Enemy を描画する関数
+  public void draw() {
+    //int r = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*10.0);
+    //int c = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*50.0); //±50
+    //fill(200+c,50-c,50-c);
+    //noStroke();
+    //circle(position.x,position.y,size+r);
+    //2020矢野変更:敵を赤丸からネズミの画像に置き換え
+    image(img, position.x-size, position.y-size, size*2, size*2);
+    drawBullets();
   }
   //Override
   public void move(){
@@ -65,6 +80,7 @@ class Boss extends Enemy_Base{
   private int bulletSpeed_Nway;
   private int shootTiming_Nway;
   private int movespeed;
+  private PImage img;
 
   public Boss(PVector pos){
     super(pos);
@@ -78,6 +94,20 @@ class Boss extends Enemy_Base{
     super.shootingTiming_ms= int(random(50,200));
     super.heartbeat_phase = random(2.0*PI);
     super.heartbeat_freq = 400.0;
+    img = loadImage("data/mouse_blue.png");
+  }
+
+  //Override
+  // Enemy を描画する関数
+  public void draw() {
+    //int r = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*10.0);
+    //int c = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*50.0); //±50
+    //fill(200+c,50-c,50-c);
+    //noStroke();
+    //circle(position.x,position.y,size+r);
+    //2020矢野変更:敵を赤丸からネズミの画像に置き換え
+    image(img, position.x-size, position.y-size, size*2, size*2);
+    drawBullets();
   }
   //Override
   public void move(){//ボスの動き
