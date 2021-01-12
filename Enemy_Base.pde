@@ -45,6 +45,7 @@ abstract class Enemy_Base {
   //Enemy_Baseを継承したクラス内で↓をオーバーライドする
   abstract public void move(); //移動
   abstract public void shoot(); //弾を発射
+  abstract public void draw(); //敵キャラと弾の描画
  
   //↓全敵共通
   protected void sethp(int hp){
@@ -92,22 +93,10 @@ abstract class Enemy_Base {
     hit();
   }
 
-  // Enemy を描画する関数
-  public void draw() {
-
-    int r = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*10.0);
-    int c = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*50.0); //±50
-
-
-    fill(200+c,50-c,50-c);
-    noStroke();
-    circle(position.x,position.y,size+r);
-    drawBullets();
-  }
-
   //draw内にて呼んでいます．
   //梶本コメント：これはBulletクラス中で書いたほうが良い？Bulletチームに依頼？
-  private void drawBullets(){
+  //2020矢野変更:private→protected
+  protected void drawBullets(){
 
       //for(int b_idx = 0; b_idx < bullets.size(); b_idx++) {
       for(int b_idx = bullets.size()-1; b_idx >= 0 ; b_idx--) { //removeがある場合のリストの扱い(Kajimoto)
