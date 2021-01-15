@@ -1,10 +1,8 @@
 class Enemy extends Enemy_Base{
-  private PImage img;
   public Enemy(PVector pos) {
     super(pos);
     sethp(3);
     setsize(100);
-    img = loadImage("data/mouse_white.png");
   }
 
   //Override
@@ -16,7 +14,7 @@ class Enemy extends Enemy_Base{
     //noStroke();
     //circle(position.x,position.y,size+r);
     //2020矢野変更:敵を赤丸からネズミの画像に置き換え
-    image(img, position.x-size, position.y-size, size*2, size*2);
+    image(mouse_white, position.x-size, position.y-size, size*2, size*2);
     drawBullets();
   }
   //Override

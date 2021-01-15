@@ -19,16 +19,15 @@ class Bul_Normal extends Bullet {
     noStroke();
     if(is_player){ //プレイヤー
       for(int i=-6; i<=6; i=i+6){
-        fill(255, 0, 0, 150);
-        circle(position.x+i, position.y, 12);
-        circle(position.x, position.y+i, 12);
+        //circle(position.x, position.y, 12);
+        image(fish1, position.x-15, position.y-20, 25, 35);
       }
     }else{ //敵
-      if(((millis())%400) > 200) fill(0, 0, 155, 400 - ((millis())%400));
-      else fill(0, 0, 155, (millis())%200);
+      //if(((millis())%400) > 200) fill(0, 0, 155, 400 - ((millis())%400));
+      //else //fill(0, 0, 155, (millis())%200);
       for(int i=-4; i<=4; i=i+2){
-        circle(position.x+i, position.y, 5+(i*i));
-        circle(position.x, position.y+i, 5+(i*i));
+        //circle(position.x, position.y, 5+(i*i));
+        image(cheese, position.x-15, position.y-15, 30, 30);
       } 
     }
   }
@@ -47,8 +46,8 @@ class Bul_Boost extends Bullet {
     if(is_player){ //プレイヤー
       for(int i=-6; i<=6; i=i+6){
         fill(255, 0, 0, 150);
-        circle(position.x+i, position.y, 12);
-        circle(position.x, position.y+i, 12);
+        circle(position.x, position.y, 12);
+        image(fish3, position.x-15, position.y-20, 25, 35);
       }
     }else{ //敵
       if(((millis())%400) > 200) fill(0, 0, 155, 400 - ((millis())%400));
@@ -78,8 +77,8 @@ class Bul_Explosion extends Bullet{
     if(is_player){ //プレイヤー
       for(int i=-6; i<=6; i=i+6){
         fill(255, 0, 0, 150);
-        circle(position.x+i, position.y, 12);
-        circle(position.x, position.y+i, 12);
+        circle(position.x, position.y, 12);
+        image(fish2, position.x-15, position.y-20, 25, 35);
       }
     }else{ //敵
       if(((millis())%400) > 200) fill(0, 0, 155, 400 - ((millis())%400));
@@ -131,8 +130,8 @@ class Bul_Homing extends Bullet{
     if(is_player){ //プレイヤー
       for(int i=-6; i<=6; i=i+6){
         fill(255, 0, 0, 150);
-        circle(position.x+i, position.y, 12);
-        circle(position.x, position.y+i, 12);
+        circle(position.x, position.y, 12);
+        image(fish4, position.x-15, position.y-20, 25, 35);
       }
     }else{ //敵
       if(((millis())%400) > 200) fill(0, 0, 155, 400 - ((millis())%400));
