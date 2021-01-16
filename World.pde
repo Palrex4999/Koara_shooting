@@ -51,7 +51,6 @@ class World {
   private PImage haikei; //スクロール用画像
   private int sx = 0; //切り出し位置
   private int sy = 0; //切り出し位置
-
   
   //////////////////////////////////////////
 

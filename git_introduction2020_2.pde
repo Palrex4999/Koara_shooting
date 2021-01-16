@@ -10,12 +10,23 @@ import ddf.minim.ugens.*;
 // ここを変更するときは、他の人とコンフリクトが起きないように注意してください。
 
 World world;
+public PImage fish1,fish2,fish3,fish4;
+public PImage mouse_white;
+public PImage cheese;
 
 void setup() {
-  size(800, 600);
-  frameRate(60);
+  size(800, 600, P2D);
+  frameRate(30);
+  noSmooth();  
   world = new World();
   world.init();
+  fish1 = loadImage("data/fish1.png");
+  fish2 = loadImage("data/fish2.png");
+  fish3 = loadImage("data/fish3.png");
+  fish4 = loadImage("data/fish4.png");
+  cheese = loadImage("data/cheese.png");
+  mouse_white = loadImage("data/mouse_white.png");
+
 }
 
 void draw() {

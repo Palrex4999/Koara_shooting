@@ -22,7 +22,7 @@ class Player {
 
   public boolean is_dead; //プレイヤーの状態
   
-  private PImage cat; //2020矢野追加 プレイヤー画像
+  private PImage cat;
 
   Minim minim;
   AudioPlayer shootSE, hitSE, clushSE;
