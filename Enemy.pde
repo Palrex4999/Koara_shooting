@@ -44,7 +44,7 @@ class Enemy extends Enemy_Base{
     for(int i=0 ; i<3 ; i++){
       float tmp_deg = -deg + deg * i;
       PVector tmp_Vec = toPlayerVec.copy().rotate(tmp_deg).normalize().mult(2.0);
-      int damage = int(random(5,10));
+      int damage = int(random(10,15));
       
       PVector bulletPos = new PVector();
       bulletPos = this.position.copy();
@@ -138,7 +138,7 @@ class Boss extends Enemy_Base{
     for(int i=0 ; i<3 ; i++){
       float tmp_deg = -deg + deg * i;
       PVector tmp_Vec = toPlayerVec.copy().rotate(tmp_deg).normalize().mult(2.0);
-      int damage = int(random(5,10));
+      int damage = int(random(10,15));
       
       PVector bulletPos = new PVector();
       bulletPos = this.position.copy();

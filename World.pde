@@ -257,7 +257,7 @@ class World {
       player_p = player.getPosition();
       //UIの表示
       drawHP(player);
-      drawLife(player);
+      //drawLife(player);
       drawScore();
       //HP管理
       if(player.getHP()<=0){
@@ -279,10 +279,12 @@ class World {
   }
 
  void drawHP(Player player){ //残りHPの描画
+      fill(255);
+      text("HP",10,35);
       fill(200);
-      rect(30,8,200,30);
+      rect(60,8,200,30);
       fill(255,0,0);
-      rect(30,8,player.getHP()*2,30);
+      rect(60,8,player.getHP()*2,30);
   }
 
  void drawLife(Player player){ //残りライフの描画
