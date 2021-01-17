@@ -33,7 +33,6 @@ class World {
   private int beated; //敵の撃破数
   private boolean boss_in = false; // true: boss出現
   private boolean isGameOver_game = false;//ゲームオーバーかどうか
-  private boolean isGameClear_game = false;
 
   private PVector player_p;  //player座標
   //private PImage back; //プレイ画面の背景
@@ -41,10 +40,6 @@ class World {
 
   //ゲームオーバー画面に用いる変数
   private int frameCount_over = 0;//ゲームオーバー画面の経過時間
-  
-  //ゲームクリア・ゲームオーバー画像
-  private PImage gameclear;
-  private PImage gameover;
   
   //音
   private Minim minim;
@@ -56,6 +51,10 @@ class World {
   private PImage haikei; //スクロール用画像
   private int sx = 0; //切り出し位置
   private int sy = 0; //切り出し位置
+  
+  //ゲームクリア・ゲームオーバー画像
+  private PImage gameclear;
+  private PImage gameover;
   
   //////////////////////////////////////////
 
@@ -189,7 +188,6 @@ class World {
     Player p = new Player(new PVector(width/2.0, height * (3/4.0)));
     players.add(p);
     isGameOver_game = false;
-    isGameClear_game = false;
     //ボスの生成
     boss = new Boss(new PVector(width*1.2, height/2));  //矢野変更：ボスの位置を画面外右に
     boss_in = false;
@@ -219,7 +217,7 @@ class World {
     lastHP_game = 0;
     //120フレームごとに敵を追加
     if(frameCount%120==0 && !boss_in) {
-      Enemy e = new Enemy(new PVector(random(width, width*1.2), random(height*0.1, height*0.9))); //画面外に生成
+      Enemy e = new Enemy(new PVector(random(width, width*1.2), random(height))); //画面外に生成
       enemies.add(e);
     }
     //敵の毎フレームごとの処理
@@ -240,8 +238,8 @@ class World {
 
     if(boss_in){ //ボス登場
       boss.update();
-      if (boss.is_dead){ // Bossが倒されたらisGameClear_gameをtrueにする
-        isGameClear_game = true;
+      if (boss.is_dead){ // Bossが倒されたらisGameOver_gameをtrueにする
+        isGameOver_game = true;
         score+=10000;//2021須賀追加：Bossが倒されたら10000点
         beated++;
       }else{
@@ -274,7 +272,7 @@ class World {
       lastHP_game += player.getHP();
     }
 
-    if(isGameOver_game || isGameClear_game)
+    if(isGameOver_game)
       changeSceneTo(2);
   }
 
@@ -311,9 +309,15 @@ class World {
 
   private void draw_over() {
     // ゲームオーバー画面での毎フレームの処理
-    if(isGameClear_game) image(gameclear, 280, 80);
-    if(isGameOver_game) image(gameover, 280, 80);
-    
+
+    stroke(0);
+    strokeWeight(2);
+    line(width/2-(frameCount_over%20)*5, 150, width/2+(frameCount_over%20)*5, 150);
+    strokeWeight(1);
+    //スコアと倒した敵の数の表示
+    fill(50);
+    textAlign(CENTER);
+    text("RESULT", 100, 100, width-200, 50);
 
     textAlign(LEFT);
     text("Score : ", 100, 200, width-200, 100);

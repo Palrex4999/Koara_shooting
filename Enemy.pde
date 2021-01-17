@@ -16,6 +16,7 @@ class Enemy extends Enemy_Base{
     //2020矢野変更:敵を赤丸からネズミの画像に置き換え
     image(mouse_white, position.x-size, position.y-size, size*2, size*2);
     drawBullets();
+    drawhp(80);
   }
   //Override
   public void move(){
@@ -106,6 +107,7 @@ class Boss extends Enemy_Base{
     //2020矢野変更:敵を赤丸からネズミの画像に置き換え
     image(img, position.x-size, position.y-size, size*2, size*2);
     drawBullets();
+    drawhp(200);
   }
   //Override
   public void move(){//ボスの動き

@@ -22,6 +22,7 @@ abstract class Enemy_Base {
   protected long lastHitTime_ms;  //最後にBulletに当たった時刻(ms)
   public boolean is_dead; //死んだかどうか
   public boolean is_hit; //2021須賀追加:たまに当たっているかどうか
+  private int maxHP;
   final int INVINCIBLE_TERM_MS = 1000;  // 無敵期間(ms)
 
   public Enemy_Base (PVector pos) {
@@ -50,9 +51,18 @@ abstract class Enemy_Base {
   //↓全敵共通
   protected void sethp(int hp){
     this.hp = hp;
+    maxHP = hp;
   }
   protected void setsize(int size){
     this.size = size;
+  }
+
+  protected void drawhp(int len){
+    fill(255, 0, 0);
+    int hpLength = (int)map(hp, 0, maxHP, 0, len);
+    rectMode(CENTER);
+    rect(position.x-20, position.y-size/1.5, hpLength, 5);
+    rectMode(CORNER);
   }
 
   // Player の Bullet に当たると Enemy の hp を1削る．
