@@ -72,8 +72,8 @@ class World {
     textFont(font);
     //サウンド関係
     minim = new Minim(getPApplet());
-    bgm_start = minim.loadFile("dance.mp3");
-    bgm_game = minim.loadFile("digitalworld.mp3");
+    bgm_start = minim.loadFile("opening.mp3");
+    bgm_game = minim.loadFile("playing.mp3");
     bgm_over = minim.loadFile("yokoku_cut.mp3");
     sound_pikin = minim.loadFile("button31.mp3");
 
