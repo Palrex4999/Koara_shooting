@@ -33,6 +33,7 @@ class World {
   private int beated; //敵の撃破数
   private boolean boss_in = false; // true: boss出現
   private boolean isGameOver_game = false;//ゲームオーバーかどうか
+  private boolean isGameClear_game = false;
 
   private PVector player_p;  //player座標
   //private PImage back; //プレイ画面の背景
@@ -40,6 +41,10 @@ class World {
 
   //ゲームオーバー画面に用いる変数
   private int frameCount_over = 0;//ゲームオーバー画面の経過時間
+  
+  //ゲームクリア・ゲームオーバー画像
+  private PImage gameclear;
+  private PImage gameover;
   
   //音
   private Minim minim;
@@ -67,9 +72,9 @@ class World {
     textFont(font);
     //サウンド関係
     minim = new Minim(getPApplet());
-    bgm_start = minim.loadFile("dance.mp3");
-    bgm_game = minim.loadFile("digitalworld.mp3");
-    bgm_over = minim.loadFile("yokoku_cut.mp3");
+    bgm_start = minim.loadFile("opening.mp3");
+    bgm_game = minim.loadFile("playing.mp3");
+    bgm_over = minim.loadFile("clear.mp3");
     sound_pikin = minim.loadFile("button31.mp3");
 
     init();
@@ -88,6 +93,8 @@ class World {
   void init() {
     scene = 0;
     haikei = loadImage("night_sky.png");
+    gameclear = loadImage("gameclear.png");
+    gameover = loadImage("gameover.png");
     //back.resize(back.width+500, back.height+500);
     init_start();
   }
@@ -182,6 +189,7 @@ class World {
     Player p = new Player(new PVector(width/2.0, height * (3/4.0)));
     players.add(p);
     isGameOver_game = false;
+    isGameClear_game = false;
     //ボスの生成
     boss = new Boss(new PVector(width*1.2, height/2));  //矢野変更：ボスの位置を画面外右に
     boss_in = false;
@@ -211,7 +219,7 @@ class World {
     lastHP_game = 0;
     //120フレームごとに敵を追加
     if(frameCount%120==0 && !boss_in) {
-      Enemy e = new Enemy(new PVector(random(width, width*1.2), random(height))); //画面外に生成
+      Enemy e = new Enemy(new PVector(random(width, width*1.2), random(height*0.1, height*0.9))); //画面外に生成
       enemies.add(e);
     }
     //敵の毎フレームごとの処理
@@ -232,8 +240,8 @@ class World {
 
     if(boss_in){ //ボス登場
       boss.update();
-      if (boss.is_dead){ // Bossが倒されたらisGameOver_gameをtrueにする
-        isGameOver_game = true;
+      if (boss.is_dead){ // Bossが倒されたらisGameClear_gameをtrueにする
+        isGameClear_game = true;
         score+=10000;//2021須賀追加：Bossが倒されたら10000点
         beated++;
       }else{
@@ -249,7 +257,7 @@ class World {
       player_p = player.getPosition();
       //UIの表示
       drawHP(player);
-      drawLife(player);
+      //drawLife(player);
       drawScore();
       //HP管理
       if(player.getHP()<=0){
@@ -266,15 +274,17 @@ class World {
       lastHP_game += player.getHP();
     }
 
-    if(isGameOver_game)
+    if(isGameOver_game || isGameClear_game)
       changeSceneTo(2);
   }
 
  void drawHP(Player player){ //残りHPの描画
+      fill(255);
+      text("HP",10,35);
       fill(200);
-      rect(30,8,200,30);
+      rect(60,8,200,30);
       fill(255,0,0);
-      rect(30,8,player.getHP()*2,30);
+      rect(60,8,player.getHP()*2,30);
   }
 
  void drawLife(Player player){ //残りライフの描画
@@ -297,21 +307,17 @@ class World {
     rect(50, 50, width-100, height-100);
     frameCount_over = 0;
 
+    //float gain = bgm_over.getGain();
+    bgm_over.setGain(-10);
     bgm_over.rewind();
     bgm_over.loop();
   }
 
   private void draw_over() {
     // ゲームオーバー画面での毎フレームの処理
-
-    stroke(0);
-    strokeWeight(2);
-    line(width/2-(frameCount_over%20)*5, 150, width/2+(frameCount_over%20)*5, 150);
-    strokeWeight(1);
-    //スコアと倒した敵の数の表示
-    fill(50);
-    textAlign(CENTER);
-    text("RESULT", 100, 100, width-200, 50);
+    if(isGameClear_game) image(gameclear, 280, 80);
+    if(isGameOver_game) image(gameover, 280, 80);
+    
 
     textAlign(LEFT);
     text("Score : ", 100, 200, width-200, 100);

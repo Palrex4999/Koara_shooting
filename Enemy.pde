@@ -1,7 +1,7 @@
 class Enemy extends Enemy_Base{
   public Enemy(PVector pos) {
     super(pos);
-    sethp(3);
+    sethp(10);
     setsize(100);
   }
 
@@ -16,6 +16,7 @@ class Enemy extends Enemy_Base{
     //2020矢野変更:敵を赤丸からネズミの画像に置き換え
     image(mouse_white, position.x-size, position.y-size, size*2, size*2);
     drawBullets();
+    drawhp(80);
   }
   //Override
   public void move(){
@@ -43,7 +44,7 @@ class Enemy extends Enemy_Base{
     for(int i=0 ; i<3 ; i++){
       float tmp_deg = -deg + deg * i;
       PVector tmp_Vec = toPlayerVec.copy().rotate(tmp_deg).normalize().mult(2.0);
-      int damage = int(random(5,10));
+      int damage = int(random(10,15));
       
       PVector bulletPos = new PVector();
       bulletPos = this.position.copy();
@@ -82,7 +83,7 @@ class Boss extends Enemy_Base{
 
   public Boss(PVector pos){
     super(pos);
-    sethp(10);
+    sethp(30);
     setsize(150);
     movespeed = -1;
     isShooted_Nway = false;
@@ -106,6 +107,7 @@ class Boss extends Enemy_Base{
     //2020矢野変更:敵を赤丸からネズミの画像に置き換え
     image(img, position.x-size, position.y-size, size*2, size*2);
     drawBullets();
+    drawhp(200);
   }
   //Override
   public void move(){//ボスの動き
@@ -136,7 +138,7 @@ class Boss extends Enemy_Base{
     for(int i=0 ; i<3 ; i++){
       float tmp_deg = -deg + deg * i;
       PVector tmp_Vec = toPlayerVec.copy().rotate(tmp_deg).normalize().mult(2.0);
-      int damage = int(random(5,10));
+      int damage = int(random(10,15));
       
       PVector bulletPos = new PVector();
       bulletPos = this.position.copy();

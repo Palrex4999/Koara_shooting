@@ -31,8 +31,8 @@ class Player {
     position = pos;
     bullets = new ArrayList<Bullet>();
     size = 30;
-    HP = 80;
-    life = 3;
+    HP = 100;
+    life = 1;
     cat = loadImage("data/cat.png");
     minim = new Minim(getPApplet());    
     shootSE = minim.loadFile("shoot1.mp3");
