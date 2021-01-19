@@ -1,7 +1,7 @@
 class Enemy extends Enemy_Base{
   public Enemy(PVector pos) {
     super(pos);
-    sethp(3);
+    sethp(10);
     setsize(100);
   }
 
@@ -83,7 +83,7 @@ class Boss extends Enemy_Base{
 
   public Boss(PVector pos){
     super(pos);
-    sethp(10);
+    sethp(30);
     setsize(150);
     movespeed = -1;
     isShooted_Nway = false;
