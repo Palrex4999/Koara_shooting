@@ -93,7 +93,7 @@ class Boss extends Enemy_Base{
     super.shootingTiming_ms= int(random(50,200));
     super.heartbeat_phase = random(2.0*PI);
     super.heartbeat_freq = 400.0;
-    img = loadImage("data/mouse_blue.png");
+    img = loadImage("data/mouse.png");
   }
 
   //Override
@@ -103,9 +103,9 @@ class Boss extends Enemy_Base{
     //int c = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*50.0); //±50
     //fill(200+c,50-c,50-c);
     //noStroke();
-    //circle(position.x,position.y,size+r);
+    circle(position.x,position.y,size);
     //2020矢野変更:敵を赤丸からネズミの画像に置き換え
-    image(img, position.x-size, position.y-size, size*2, size*2);
+    image(img, position.x-size, position.y-size, size*1.8, size*1.8);
     drawBullets();
     drawhp(200);
   }
