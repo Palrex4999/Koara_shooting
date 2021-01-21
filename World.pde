@@ -27,6 +27,7 @@ class World {
   //ゲーム画面に用いる変数
   private ArrayList<Player> players; //プレイヤー
   private ArrayList<Enemy> enemies; //敵
+  public ArrayList<Bullet> enemybullets; //2021須賀追加：敵の弾を一括管理する
   private Boss boss; //ボス
   private int score;//得点
   private int lastHP_game = 0; //残りHP
@@ -62,10 +63,13 @@ class World {
   public ArrayList<Player> getPlayers() { return this.players; }
   public ArrayList<Enemy> getEnemies() { return this.enemies; }
   public Boss getBoss() { return this.boss; }  
+  public ArrayList<Bullet> getEnemyBullets() {return this.enemybullets;}//2021須賀追加
+  public void addEnemyBullets(Bullet b) {enemybullets.add(b);}//2021須賀追加：敵の弾を追加する
 
   public World() {
     players = new ArrayList<Player>();
     enemies = new ArrayList<Enemy>();
+    enemybullets = new ArrayList<Bullet>();
 
     //日本語表示対応
     PFont font = createFont("MS Gothic",50);
@@ -236,6 +240,18 @@ class World {
       }
       else 
         enemy.draw();
+    }
+
+    //2021須賀追加：敵消滅後の弾の描画処理
+    for(int b_idx = enemybullets.size()-1; b_idx >= 0 ; b_idx--) {
+      Bullet b = enemybullets.get(b_idx);
+      b.update(); 
+      if(b.getPosition().x < 0 || b.getPosition().x > width
+      || b.getPosition().y < 0 || b.getPosition().y > height){
+        enemybullets.remove(b_idx);
+      }
+      else 
+        b.draw();
     }
 
     if(boss_in){ //ボス登場

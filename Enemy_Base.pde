@@ -11,7 +11,6 @@ abstract class Enemy_Base {
   //フィールドはとりあえずここにおいてあるけど、移動するかも？
   PVector position;
   protected int hp, size;
-  protected ArrayList<Bullet> bullets;
   float heartbeat_phase,heartbeat_freq;
   protected boolean isShooted;//射撃したか保持する変数．
   protected int shootingTiming_ms;//射撃タイミングの設定
@@ -27,7 +26,6 @@ abstract class Enemy_Base {
 
   public Enemy_Base (PVector pos) {
     position = pos;
-    bullets = new ArrayList<Bullet>();
     isShooted = false;
     shootingTiming_ms = int(random(200,400));
     
@@ -103,30 +101,6 @@ abstract class Enemy_Base {
     hit();
   }
 
-  //draw内にて呼んでいます．
-  //梶本コメント：これはBulletクラス中で書いたほうが良い？Bulletチームに依頼？
-  //2020矢野変更:private→protected
-  protected void drawBullets(){
-
-      //for(int b_idx = 0; b_idx < bullets.size(); b_idx++) {
-      for(int b_idx = bullets.size()-1; b_idx >= 0 ; b_idx--) { //removeがある場合のリストの扱い(Kajimoto)
-        Bullet b = bullets.get(b_idx);
-        //↓梶本コメント　これを入れると、bulletクラス中のupdate関数のthis.position.addが、
-        //  Enemy本体に適用されてしまいます（ここではenemy = thisなので）。
-        //  そのためenemy本体が吹っ飛んでいきます。
-        //金子コメント　
-        //Enemyを吹っ飛ばなくするために，新たにbullet用の座標クラスを作成しました．
-        b.update(); 
-        if(b.getPosition().x < 0 || b.getPosition().x > width
-        || b.getPosition().y < 0 || b.getPosition().y > height){
-          bullets.remove(b_idx);
-        }
-        else 
-          b.draw();
-      }
-  }
-
-  protected ArrayList<Bullet> getBullets() { return bullets; } //弾の配列を得る
   protected PVector getPosition() { return this.position; } //自分の位置を返す
 
 } 
