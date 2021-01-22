@@ -27,6 +27,7 @@ class World {
   //ゲーム画面に用いる変数
   private ArrayList<Player> players; //プレイヤー
   private ArrayList<Enemy> enemies; //敵
+  public ArrayList<Bullet> enemybullets; //2021須賀追加：敵の弾を一括管理する
   private Boss boss; //ボス
   private int score;//得点
   private int lastHP_game = 0; //残りHP
@@ -45,6 +46,12 @@ class World {
   //ゲームクリア・ゲームオーバー画像
   private PImage gameclear;
   private PImage gameover;
+
+  //2021須賀追加：弾UI
+  private PImage e,q,r,f;
+  private PImage e_fig,q_fig,r_fig,f_fig;
+  private PImage frame,selectframe;
+  private int transUI=255;
   
   //音
   private Minim minim;
@@ -62,10 +69,13 @@ class World {
   public ArrayList<Player> getPlayers() { return this.players; }
   public ArrayList<Enemy> getEnemies() { return this.enemies; }
   public Boss getBoss() { return this.boss; }  
+  public ArrayList<Bullet> getEnemyBullets() {return this.enemybullets;}//2021須賀追加
+  public void addEnemyBullets(Bullet b) {enemybullets.add(b);}//2021須賀追加：敵の弾を追加する
 
   public World() {
     players = new ArrayList<Player>();
     enemies = new ArrayList<Enemy>();
+    enemybullets = new ArrayList<Bullet>();
 
     //日本語表示対応
     PFont font = createFont("MS Gothic",50);
@@ -96,6 +106,16 @@ class World {
     gameclear = loadImage("gameclear.png");
     gameover = loadImage("gameover.png");
     //back.resize(back.width+500, back.height+500);
+    e=loadImage("e.png");
+    q=loadImage("q.png");
+    r=loadImage("r.png");
+    f=loadImage("f.png");
+    e_fig=loadImage("e_fig.png");
+    q_fig=loadImage("q_fig.png");
+    r_fig=loadImage("r_fig.png");
+    f_fig=loadImage("f_fig.png");
+    frame=loadImage("frame.png");
+    selectframe=loadImage("selectframe.png");
     init_start();
   }
 
@@ -185,6 +205,7 @@ class World {
     // ゲーム画面での初期化
     players = new ArrayList<Player>(); 
     enemies = new ArrayList<Enemy>();
+    enemybullets = new ArrayList<Bullet>();
     //プレイヤーの生成
     Player p = new Player(new PVector(width/2.0, height * (3/4.0)));
     players.add(p);
@@ -238,6 +259,18 @@ class World {
         enemy.draw();
     }
 
+    //2021須賀追加：敵消滅後の弾の描画処理
+    for(int b_idx = enemybullets.size()-1; b_idx >= 0 ; b_idx--) {
+      Bullet b = enemybullets.get(b_idx);
+      b.update(); 
+      if(b.getPosition().x < 0 || b.getPosition().x > width
+      || b.getPosition().y < 0 || b.getPosition().y > height){
+        enemybullets.remove(b_idx);
+      }
+      else 
+        b.draw();
+    }
+
     if(boss_in){ //ボス登場
       boss.update();
       if (boss.is_dead){ // Bossが倒されたらisGameClear_gameをtrueにする
@@ -274,6 +307,10 @@ class World {
       lastHP_game += player.getHP();
     }
 
+    //弾UI描画
+    drawBulletsUI();
+
+
     if(isGameOver_game || isGameClear_game)
       changeSceneTo(2);
   }
@@ -297,6 +334,34 @@ class World {
     fill(255);
     textSize(30);
     text("SCORE:"+score,width/2.0,35);
+  }
+
+  void drawBulletsUI(){//弾UI描画
+    if((mouseX<400 && mouseY>height-125) || (player_p.x<420 && player_p.y>height-125))transUI=max(transUI-(16+transUI/20),66);
+    else transUI=min(transUI+16,255);
+
+    tint(255.0,transUI);
+    for(int i=0;i<4;i++){
+      image(frame,10+100*i,height-96);
+      for (Player player : players) {
+        if(i==player.getBulletType()){
+          image(selectframe,10+100*i,height-96);
+        }
+      }
+    }
+    
+    image(e_fig,10,height-96);
+    image(e,10,height-32);
+    
+    image(q_fig,110,height-96);
+    image(q,110,height-32);
+
+    image(r_fig,210,height-96);
+    image(r,210,height-32);
+
+    image(f_fig,310,height-96);
+    image(f,310,height-32);
+    tint(255.0,255);
   }
 
   /************* ゲームオーバー画面 ***********************/
@@ -403,10 +468,12 @@ class World {
       }
     }
 
+    /*
     if(key == 'e') {//eキーで敵を出現させる(デバッグ用？)
       Enemy e = new Enemy(new PVector(random(width), random(height)));
       enemies.add(e);
     }
+    */
 
     for(Player player : players) player.keyPressed(key);
     for(Enemy enemy : enemies) enemy.keyPressed(key);
@@ -438,6 +505,8 @@ class World {
       }
     }
   }
+
+
 
   void stopMusic(){
     bgm_start.close();

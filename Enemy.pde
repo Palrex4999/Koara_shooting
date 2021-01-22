@@ -15,7 +15,6 @@ class Enemy extends Enemy_Base{
     //circle(position.x,position.y,size+r);
     //2020矢野変更:敵を赤丸からネズミの画像に置き換え
     image(mouse_white, position.x-size, position.y-size, size*2, size*2);
-    drawBullets();
     drawhp(80);
   }
   //Override
@@ -48,7 +47,7 @@ class Enemy extends Enemy_Base{
       
       PVector bulletPos = new PVector();
       bulletPos = this.position.copy();
-      bullets.add(new Bul_Normal(bulletPos,tmp_Vec,damage,false));
+      world.addEnemyBullets(new Bul_Normal(bulletPos,tmp_Vec,damage,false));
       //bullets.add(new Bullet(position,tmp_Vec,damage)); //とりあえず動かすために戻しました。後でfalse入れる
     }
   }
@@ -106,7 +105,6 @@ class Boss extends Enemy_Base{
     circle(position.x,position.y,size);
     //2020矢野変更:敵を赤丸からネズミの画像に置き換え
     image(img, position.x-size, position.y-size, size*1.8, size*1.8);
-    drawBullets();
     drawhp(200);
   }
   //Override
@@ -142,7 +140,7 @@ class Boss extends Enemy_Base{
       
       PVector bulletPos = new PVector();
       bulletPos = this.position.copy();
-      bullets.add(new Bul_Normal(bulletPos,tmp_Vec,damage,false));
+      world.addEnemyBullets(new Bul_Normal(bulletPos,tmp_Vec,damage,false));
       //bullets.add(new Bullet(position,tmp_Vec,damage)); //とりあえず動かすために戻しました。後でfalse入れる
     }
   }
@@ -173,7 +171,7 @@ class Boss extends Enemy_Base{
       int damage = int(random(5,10));//とりあえず設定．player側の体力と相談？
       PVector bulletPos = new PVector();
       bulletPos = this.position.copy();
-      super.bullets.add(new Bul_Normal(bulletPos,tmp_Vec,damage,false));
+      world.addEnemyBullets(new Bul_Normal(bulletPos,tmp_Vec,damage,false));
       //super.bullets.add(new Bullet(position,tmp_Vec,damage));//後々falseを入れて修正．
 
     }
