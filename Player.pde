@@ -10,6 +10,10 @@ class Player {
   private int bulway=1; //発射する弾のWAY数:1→3WAY 0→1WAY
   private float angle; //プレイヤーの角度
 
+  private int attribute; //プレイヤーの属性
+  private int absorb=0; //弾吸収数
+  public boolean absorbed=false; //弾を吸収したかどうか
+
   //////////////////////////////////////////
   //2021須賀修正分：
   //クラス下部で行われていた変数宣言を上部へ
@@ -33,6 +37,9 @@ class Player {
     size = 30;
     HP = 100;
     life = 1;
+
+    attribute=#ff0000;
+
     cat = loadImage("data/cat.png");
     minim = new Minim(getPApplet());    
     shootSE = minim.loadFile("shoot1.mp3");
@@ -42,6 +49,18 @@ class Player {
 
   //プレイヤーに敵の弾が当たった時の処理
   public void hit(int damage) {
+    //damageが負の時＝同属性の弾に当たった時
+    if(damage<0){
+      absorbed=true;
+      absorb++;
+      if(absorb==10){//10回目のとき回復
+        HP=min(100,HP-damage);
+        absorb=0;
+      }
+      hitCount=0;
+      return;
+    }
+
     HP -= damage;
     if(HP < 0) {
       is_dead = (life-- == 0);
@@ -78,7 +97,7 @@ class Player {
       float dist = PVector.sub(e_bullet.getPosition(), position).mag();
       // 衝突判定
       if (dist < size/2 && millis() - hitCount > 1000) {
-        int damage = e_bullet.getDamage();
+        int damage = e_bullet.getDamage()*(this.attribute==e_bullet.getAttribute()?-1:1);
         hit(damage);
         world.getEnemyBullets().remove(b_idx);
       }
@@ -91,15 +110,15 @@ class Player {
   private Bullet setBullet(PVector pos, PVector vel){
     switch (bultype) {
       case 0:
-        return new Bul_Normal(pos,vel);
+        return new Bul_Normal(pos,vel,attribute);
       case 1:
-        return new Bul_Boost(pos,vel);
+        return new Bul_Boost(pos,vel,attribute);
       case 2:
-        return new Bul_Explosion(pos,vel);
+        return new Bul_Explosion(pos,vel,attribute);
       case 3:
-        return new Bul_Homing(pos,vel);
+        return new Bul_Homing(pos,vel,attribute);
       default :
-        return new Bul_Normal(pos,vel);
+        return new Bul_Normal(pos,vel,attribute);
     }
   }
   //////////////////////////////////////////
@@ -152,8 +171,20 @@ class Player {
     drawAircraft(this.size);
     */
 
+    imageMode(CENTER);
+    tint(attribute,128);
+    image(cat, 0, 0, 130, 130);
+    tint(255,255);
+
     //2020矢野追加:プレイヤーの画像
-    image(cat, -60, -50, 100, 100);
+    image(cat, 0, 0, 100, 100);
+    pop();
+
+    push();
+    fill(attribute,32);
+    noStroke();
+    ellipseMode(CENTER);
+    circle(position.x,position.y,10);
     pop();
     
     for (int b_idx = 0; b_idx < this.bullets.size(); b_idx++) {
@@ -247,6 +278,10 @@ class Player {
     return this.life;
   }
 
+  public int getAbsorbNum(){
+    return this.absorb;
+  }
+
 
   public PVector getPosition() { 
     return this.position;
@@ -257,6 +292,7 @@ class Player {
   }
 
   public int getBulletType(){return bultype;}
+  public int getPlayerAttribute(){return attribute;}
 
   private boolean key_a, key_w, key_d, key_s;
   public void keyPressed(int key) {
@@ -269,22 +305,22 @@ class Player {
     if(key == 'e'){
       bultype=0;
       bulway=1;
-      println("normal");
     }
     if(key == 'q'){
       bultype=1;
       bulway=0;
-      println("boost");
     }
     if(key == 'r'){
       bultype=2;
       bulway=0;
-      println("explosion");
     }
     if(key == 'f'){
       bultype=3;
       bulway=0;
-      println("homing");
+    }
+
+    if(key == ' '){
+      attribute=~((attribute&0xffffff)+0xff00);
     }
   }
   

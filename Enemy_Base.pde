@@ -20,9 +20,12 @@ abstract class Enemy_Base {
   protected PVector velocity2 = new PVector(0,0);//動きパターン2の速度
   protected long lastHitTime_ms;  //最後にBulletに当たった時刻(ms)
   public boolean is_dead; //死んだかどうか
-  public boolean is_hit; //2021須賀追加:たまに当たっているかどうか
+  public boolean is_hit; //2021須賀追加:弾に当たっているかどうか
+  public boolean is_absorb; //2021須賀追加：弾を吸収しているかどうか
   private int maxHP;
   final int INVINCIBLE_TERM_MS = 1000;  // 無敵期間(ms)
+
+  protected int attribute;
 
   public Enemy_Base (PVector pos) {
     position = pos;
@@ -39,6 +42,7 @@ abstract class Enemy_Base {
     heartbeat_phase = random(2.0*PI);
     heartbeat_freq = 200.0;
     lastHitTime_ms = 0L;
+    is_absorb=false;
   }
 
   //Enemy_Baseを継承したクラス内で↓をオーバーライドする
@@ -66,6 +70,10 @@ abstract class Enemy_Base {
   // Player の Bullet に当たると Enemy の hp を1削る．
   protected void hit(){
     is_hit=isHitted();
+    if(is_absorb){//同じ属性の弾に当たったときは回復してしまう
+      hp=min(maxHP,hp+1);
+      return;
+    }
     if(!is_hit)return;
     //if(!isInvincible()){
       lastHitTime_ms = millis();
@@ -88,6 +96,10 @@ abstract class Enemy_Base {
         // 衝突判定
         if (dist < size/2+pBullet.explosionsize) {
           if(pBullet.explosionsize==0)pBullets.remove(pBullet);
+          if(pBullet.getAttribute()==this.attribute){
+            is_absorb=true;
+            return false;
+          }
           return true;
         }
       }
@@ -103,5 +115,8 @@ abstract class Enemy_Base {
   }
 
   protected PVector getPosition() { return this.position; } //自分の位置を返す
+
+  //閾値prob未満のとき反転した属性を返す
+  protected int getAttributeRandomReverse(float prob){return random(0,1)>prob?this.attribute:~((this.attribute&0xffffff)+0xff00);}
 
 } 

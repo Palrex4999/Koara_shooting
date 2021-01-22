@@ -38,7 +38,6 @@ class World {
 
   private PVector player_p;  //player座標
   //private PImage back; //プレイ画面の背景
-  
 
   //ゲームオーバー画面に用いる変数
   private int frameCount_over = 0;//ゲームオーバー画面の経過時間
@@ -250,6 +249,10 @@ class World {
       if(enemy.is_hit){ //弾がヒットしたら
         score+=10;
       }
+      if(enemy.is_absorb){ //弾が吸収されたら
+        score-=10;
+        enemy.is_absorb=false;
+      }
       if(enemy.is_dead){ //敵が死んだら
         enemies.remove(e_idx);
         score+=500;
@@ -273,6 +276,13 @@ class World {
 
     if(boss_in){ //ボス登場
       boss.update();
+      if(boss.is_hit){ //弾がヒットしたら
+        score+=10;
+      }
+      if(boss.is_absorb){ //弾が吸収されたら
+        score-=10;
+        boss.is_absorb=false;
+      }
       if (boss.is_dead){ // Bossが倒されたらisGameClear_gameをtrueにする
         isGameClear_game = true;
         score+=10000;//2021須賀追加：Bossが倒されたら10000点
@@ -290,6 +300,7 @@ class World {
       player_p = player.getPosition();
       //UIの表示
       drawHP(player);
+      drawAbsorb(player);
       //drawLife(player);
       drawScore();
       //HP管理
@@ -300,6 +311,12 @@ class World {
         textSize(30);
         delay(500);
       }
+      //弾吸収時
+      if(player.absorbed){
+        score+=100;
+        player.absorbed=false;
+      }
+
       //ライフ管理
       if(player.getLife()<=0)
         isGameOver_game = true;
@@ -322,6 +339,15 @@ class World {
       rect(60,8,200,30);
       fill(255,0,0);
       rect(60,8,player.getHP()*2,30);
+  }
+
+  void drawAbsorb(Player player){ //吸収数の描画
+      fill(255);
+      text("Absorb",10,65);
+      fill(200);
+      rect(60,70,200,10);
+      fill(0,230,0);
+      rect(60,70,player.getAbsorbNum()*20,10);
   }
 
  void drawLife(Player player){ //残りライフの描画
