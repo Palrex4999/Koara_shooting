@@ -19,7 +19,7 @@ class Bul_Normal extends Bullet {
     noStroke();
     if(is_player){ //プレイヤー
       for(int i=-6; i<=6; i=i+6){
-        //circle(position.x, position.y, 12);
+        circle(position.x, position.y, 12);
         image(fish1, position.x-15, position.y-20, 25, 35);
       }
     }else{ //敵

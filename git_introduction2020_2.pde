@@ -15,7 +15,7 @@ public PImage mouse_white;
 public PImage cheese;
 
 void setup() {
-  size(800, 600, P2D);
+  size(800, 600);
   frameRate(30);
   noSmooth();  
   world = new World();
