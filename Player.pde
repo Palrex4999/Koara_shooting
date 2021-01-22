@@ -6,7 +6,7 @@ class Player {
   private int life; //ライフ
   private int size; //プレイヤーの大きさ
   private ArrayList<Bullet> bullets; //弾
-  private int bultype=1; //弾の種類
+  private int bultype=0; //弾の種類
   private int bulway=1; //発射する弾のWAY数:1→3WAY 0→1WAY
   private float angle; //プレイヤーの角度
 
@@ -90,13 +90,13 @@ class Player {
   //弾の種類の切り替え
   private Bullet setBullet(PVector pos, PVector vel){
     switch (bultype) {
-      case 1:
+      case 0:
         return new Bul_Normal(pos,vel);
-      case 2:
+      case 1:
         return new Bul_Boost(pos,vel);
-      case 3:
+      case 2:
         return new Bul_Explosion(pos,vel);
-      case 4:
+      case 3:
         return new Bul_Homing(pos,vel);
       default :
         return new Bul_Normal(pos,vel);
@@ -256,6 +256,8 @@ class Player {
     return this.bullets;
   }
 
+  public int getBulletType(){return bultype;}
+
   private boolean key_a, key_w, key_d, key_s;
   public void keyPressed(int key) {
 
@@ -265,22 +267,22 @@ class Player {
     if (key == 's') key_s = true;
 
     if(key == 'e'){
-      bultype=1;
+      bultype=0;
       bulway=1;
       println("normal");
     }
     if(key == 'q'){
-      bultype=2;
+      bultype=1;
       bulway=0;
       println("boost");
     }
     if(key == 'r'){
-      bultype=3;
+      bultype=2;
       bulway=0;
       println("explosion");
     }
     if(key == 'f'){
-      bultype=4;
+      bultype=3;
       bulway=0;
       println("homing");
     }
