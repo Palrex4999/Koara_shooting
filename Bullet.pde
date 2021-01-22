@@ -63,7 +63,7 @@ class Bul_Boost extends Bullet {
 //爆発弾
 class Bul_Explosion extends Bullet{
   private int cnt=0;//爆発するまでのカウント
-  private int b_timer;//爆発時間のタイマー
+  private int b_timer=0;//爆発時間のタイマー
   private int b_range;//爆発範囲
 
   //Player用のコンストラクタ
@@ -114,6 +114,7 @@ class Bul_Explosion extends Bullet{
     }
     fill(255,100, 0);
     circle(this.position.x, this.position.y, b_range);
+    explosionsize=b_range;
   }
 }
 

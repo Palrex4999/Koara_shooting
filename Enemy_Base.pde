@@ -80,13 +80,14 @@ abstract class Enemy_Base {
       
       for(Bullet pBullet : pBullets){
         //モートン番号が異なる場合は衝突判定を計算しない
-        if(world.mt.getMortonNum(pBullet.getPosition())!=world.mt.getMortonNum(this.position))
+        int shiftnum=world.mt.getShiftNum(this.position,this.size);
+        if(world.mt.getMortonNum(pBullet.getPosition())>>shiftnum!=world.mt.getMortonNum(new PVector(this.position.x+size,this.position.y+size))>>shiftnum)
           continue;
 
         float dist = PVector.sub(pBullet.getPosition(), this.position).mag();
         // 衝突判定
-        if (dist < size/2) {
-          pBullets.remove(pBullet);
+        if (dist < size/2+pBullet.explosionsize) {
+          if(pBullet.explosionsize==0)pBullets.remove(pBullet);
           return true;
         }
       }
