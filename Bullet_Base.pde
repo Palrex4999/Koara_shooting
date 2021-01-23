@@ -12,8 +12,9 @@ abstract class Bullet{
   protected PVector init_position;
   protected int counter;
   protected int explosionsize;
+  protected int attribute;
 
-  public Bullet(PVector pos, PVector vel, int dam, boolean player) { //敵と自分の弾
+  public Bullet(PVector pos, PVector vel, int dam, boolean player,int attribute) { //敵と自分の弾
     position = pos.copy();
     velocity = vel.copy();
     damage = dam;
@@ -21,6 +22,7 @@ abstract class Bullet{
     init_position = new PVector(pos.x, pos.y);
     counter = 0;
     explosionsize=0;
+    this.attribute=attribute;
   }
 
   public void update() {
@@ -43,4 +45,6 @@ abstract class Bullet{
   public int getDamage() {
     return damage;
   }
+
+  public int getAttribute(){return attribute;}
 }
