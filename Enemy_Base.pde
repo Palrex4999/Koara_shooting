@@ -15,15 +15,12 @@ abstract class Enemy_Base {
   protected boolean isShooted;//射撃したか保持する変数．
   protected int shootingTiming_ms;//射撃タイミングの設定
   protected int moveselect;//Enemyの動きを選択する
-  protected int moveflag;//動きを変えるタイミング
   protected PVector velocity;//動きパターン1の速度
   protected PVector velocity2 = new PVector(0,0);//動きパターン2の速度
-  protected long lastHitTime_ms;  //最後にBulletに当たった時刻(ms)
   public boolean is_dead; //死んだかどうか
   public boolean is_hit; //2021須賀追加:弾に当たっているかどうか
   public boolean is_absorb; //2021須賀追加：弾を吸収しているかどうか
   private int maxHP;
-  final int INVINCIBLE_TERM_MS = 1000;  // 無敵期間(ms)
 
   protected int attribute;
 
@@ -33,15 +30,13 @@ abstract class Enemy_Base {
     shootingTiming_ms = int(random(200,400));
     
     moveselect = int(random(2));
-    moveflag = int(random(2,4));
-    velocity = new PVector(random(-3,-1), 0); //矢野変更:Enemyの速さを変更
+    velocity = new PVector(random(-3,-2), 0); //矢野変更:Enemyの速さを変更
     
     for(Player player : world.getPlayers()){
       velocity2 = PVector.sub(player.getPosition(),position).div(100);
     }
     heartbeat_phase = random(2.0*PI);
     heartbeat_freq = 200.0;
-    lastHitTime_ms = 0L;
     is_absorb=false;
   }
 
@@ -49,7 +44,7 @@ abstract class Enemy_Base {
   abstract public void move(); //移動
   abstract public void shoot(); //弾を発射
   abstract public void draw(); //敵キャラと弾の描画
- 
+
   //↓全敵共通
   protected void sethp(int hp){
     this.hp = hp;
@@ -60,7 +55,7 @@ abstract class Enemy_Base {
   }
 
   protected void drawhp(int len,int attribute){
-    fill(attribute);
+    fill(attribute,128);
     int hpLength = (int)map(hp, 0, maxHP, 0, len);
     rectMode(CENTER);
     rect(position.x-20, position.y-size/1.5, hpLength, 5);
@@ -75,10 +70,7 @@ abstract class Enemy_Base {
       return;
     }
     if(!is_hit)return;
-    //if(!isInvincible()){
-      lastHitTime_ms = millis();
-      is_dead = (--hp == 0);
-    //}
+    is_dead = (--hp == 0);
   }
 
   // Bullet に当たったかを判定する
@@ -116,7 +108,7 @@ abstract class Enemy_Base {
 
   protected PVector getPosition() { return this.position; } //自分の位置を返す
 
-  //閾値prob未満のとき反転した属性を返す
+  //確率probで反転した属性を返す
   protected int getAttributeRandomReverse(float prob){return random(0,1)>prob?this.attribute:~((this.attribute&0xffffff)+0xff00);}
 
 } 
