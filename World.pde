@@ -57,6 +57,7 @@ class World {
   private Minim minim;
   private AudioPlayer bgm_start, bgm_game, bgm_over;
   private AudioPlayer sound_pikin;
+  private AudioPlayer absorbedSE,enemyBeatSE,bossBeatSE;
 
   //背景スクロール2020矢野追加
   final int SCROLL_SPEED = 1; //スクロールスピード
@@ -83,6 +84,9 @@ class World {
     bgm_game = minim.loadFile("playing.mp3");
     bgm_over = minim.loadFile("clear.mp3");
     sound_pikin = minim.loadFile("button31.mp3");
+    absorbedSE = minim.loadFile("status02.mp3");
+    enemyBeatSE = minim.loadFile("s-burst01.mp3");
+    bossBeatSE = minim.loadFile("s-burst02.mp3");
 
     init();
   }
@@ -238,6 +242,8 @@ class World {
         score+=10;
       }
       if(enemy.is_absorb){ //弾が吸収されたら
+        absorbedSE.rewind();
+        absorbedSE.play();
         score-=10;
         enemy.is_absorb=false;
       }
@@ -245,6 +251,8 @@ class World {
         enemies.remove(e_idx);
         score+=500;
         beated++;
+        enemyBeatSE.rewind();
+        enemyBeatSE.play();
       }
       else 
         enemy.draw();
@@ -267,6 +275,8 @@ class World {
         if(!isGameClear_game){
           score+=10000;//2021須賀追加：Bossが倒されたら10000点
           beated++;
+          bossBeatSE.rewind();
+          bossBeatSE.play();
         }
         isGameClear_game = true;
       }else{
@@ -277,6 +287,8 @@ class World {
         }
       }
       if(boss.is_absorb){ //弾が吸収されたら
+        absorbedSE.rewind();
+        absorbedSE.play();
         score-=10;
         boss.is_absorb=false;
       }
@@ -364,9 +376,9 @@ class World {
       text("MISSION:BEAT 10 MICE!   "+str(min(10,beated))+"/10",width/3+45,80);
     }else{
       fill(50,transTopUI);
-      text("MISSION:BEAT BOSS MOUSE!",width/3+47,82);
+      text("MISSION:BEAT BOSS MOUSE! "+(isGameClear_game?"1":"0")+"/1",width/3+47,82);
       fill(255,transTopUI);
-      text("MISSION:BEAT BOSS MOUSE!",width/3+45,80);
+      text("MISSION:BEAT BOSS MOUSE! "+(isGameClear_game?"1":"0")+"/1",width/3+45,80);
     }
   }
 

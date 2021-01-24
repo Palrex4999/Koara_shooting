@@ -29,7 +29,7 @@ class Player {
   private PImage cat;
 
   Minim minim;
-  AudioPlayer shootSE, hitSE, clushSE;
+  AudioPlayer shootSE, hitSE, clushSE,absorbSE;
 
   public Player(PVector pos) {
     position = pos;
@@ -45,12 +45,15 @@ class Player {
     shootSE = minim.loadFile("shoot1.mp3");
     hitSE = minim.loadFile("glass-break4.mp3");
     clushSE = minim.loadFile("flee1.mp3");
+    absorbSE = minim.loadFile("status01.mp3");
   }
 
   //プレイヤーに敵の弾が当たった時の処理
   public void hit(int damage) {
     //damageが負の時＝同属性の弾に当たった時
     if(damage<0){
+      absorbSE.rewind();
+      absorbSE.play();
       absorbed=true;
       absorb=min(10,absorb+1);
       if(absorb==10 && HP!=100){//10回目のとき回復・体力満タンのときはゲージを保持したまま回復せず
