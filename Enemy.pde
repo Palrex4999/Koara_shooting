@@ -3,6 +3,7 @@ class Enemy extends Enemy_Base{
     super(pos);
     sethp(10);
     setsize(100);
+    attribute=random(0,1)>0.5f?#ff0000:#0000ff;
   }
 
   //Override
@@ -13,10 +14,17 @@ class Enemy extends Enemy_Base{
     //fill(200+c,50-c,50-c);
     //noStroke();
     //circle(position.x,position.y,size+r);
+
+    push();
+    imageMode(CENTER);
+    tint(attribute,128);
+    image(mouse_white, position.x, position.y, size*2+30, size*2+30);
+    tint(255,255);
+
     //2020矢野変更:敵を赤丸からネズミの画像に置き換え
-    image(mouse_white, position.x-size, position.y-size, size*2, size*2);
-    drawBullets();
+    image(mouse_white, position.x, position.y, size*2, size*2);
     drawhp(80);
+    pop();
   }
   //Override
   public void move(){
@@ -48,7 +56,7 @@ class Enemy extends Enemy_Base{
       
       PVector bulletPos = new PVector();
       bulletPos = this.position.copy();
-      bullets.add(new Bul_Normal(bulletPos,tmp_Vec,damage,false));
+      world.addEnemyBullets(new Bul_Normal(bulletPos,tmp_Vec,damage,false,getAttributeRandomReverse(0.8)));
       //bullets.add(new Bullet(position,tmp_Vec,damage)); //とりあえず動かすために戻しました。後でfalse入れる
     }
   }
@@ -80,6 +88,7 @@ class Boss extends Enemy_Base{
   private int shootTiming_Nway;
   private int movespeed;
   private PImage img;
+  private int cnt;
 
   public Boss(PVector pos){
     super(pos);
@@ -90,10 +99,11 @@ class Boss extends Enemy_Base{
     numShoot_NWay = 40;
     bulletSpeed_Nway =int(random(3,6));
     shootTiming_Nway = int(random(1000,2000)); //矢野変更:タイミングを変更
-    super.shootingTiming_ms= int(random(50,200));
+    super.shootingTiming_ms= int(random(200,500));
     super.heartbeat_phase = random(2.0*PI);
     super.heartbeat_freq = 400.0;
     img = loadImage("data/mouse.png");
+    attribute=random(0,1)>0.5f?#ff0000:#0000ff;
   }
 
   //Override
@@ -103,11 +113,24 @@ class Boss extends Enemy_Base{
     //int c = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*50.0); //±50
     //fill(200+c,50-c,50-c);
     //noStroke();
+    push();
+    ellipseMode(CENTER);
+    imageMode(CENTER);
+    fill(attribute,128);
+    noStroke();
+    circle(position.x,position.y,size*1.1);
+    fill(235);
     circle(position.x,position.y,size);
     //2020矢野変更:敵を赤丸からネズミの画像に置き換え
-    image(img, position.x-size, position.y-size, size*1.8, size*1.8);
-    drawBullets();
+    image(img, position.x, position.y, size*1.8, size*1.8);
     drawhp(200);
+    pop();
+
+    //150frame毎に属性が反転する
+    if(cnt++>150){
+      attribute=~((attribute&0xffffff)+0xff00);
+      cnt=0;
+    }
   }
   //Override
   public void move(){//ボスの動き
@@ -135,15 +158,18 @@ class Boss extends Enemy_Base{
     PVector toPlayerVec = PVector.sub( playerPos, this.position);
     float deg = PI / 6; //これで30度角になる．
 
-    for(int i=0 ; i<3 ; i++){
-      float tmp_deg = -deg + deg * i;
-      PVector tmp_Vec = toPlayerVec.copy().rotate(tmp_deg).normalize().mult(2.0);
-      int damage = int(random(10,15));
-      
-      PVector bulletPos = new PVector();
-      bulletPos = this.position.copy();
-      bullets.add(new Bul_Normal(bulletPos,tmp_Vec,damage,false));
-      //bullets.add(new Bullet(position,tmp_Vec,damage)); //とりあえず動かすために戻しました。後でfalse入れる
+    for(Player player : world.getPlayers()) {
+      for(int i=0 ; i<3 ; i++){
+        int randattribute=random(0,1)>0.6f?player.getPlayerAttribute():~((player.getPlayerAttribute()&0xffffff)+0xff00);
+        float tmp_deg = -deg + deg * i;
+        PVector tmp_Vec = toPlayerVec.copy().rotate(tmp_deg).normalize().mult(2.0);
+        int damage = int(random(10,15));
+        
+        PVector bulletPos = new PVector();
+        bulletPos = this.position.copy();
+        world.addEnemyBullets(new Bul_Normal(bulletPos,tmp_Vec,damage,false,randattribute));
+        //bullets.add(new Bullet(position,tmp_Vec,damage)); //とりあえず動かすために戻しました。後でfalse入れる
+      }
     }
   }
 
@@ -168,14 +194,17 @@ class Boss extends Enemy_Base{
     PVector stdVec = new PVector(0,bulletSpeed);
     float deg = TWO_PI / numWay;
 
-    for(int i=0; i<numWay; i++){
-      PVector tmp_Vec = stdVec.copy().rotate(deg * i);
-      int damage = int(random(5,10));//とりあえず設定．player側の体力と相談？
-      PVector bulletPos = new PVector();
-      bulletPos = this.position.copy();
-      super.bullets.add(new Bul_Normal(bulletPos,tmp_Vec,damage,false));
-      //super.bullets.add(new Bullet(position,tmp_Vec,damage));//後々falseを入れて修正．
+    for(Player player : world.getPlayers()) {
+      for(int i=0; i<numWay; i++){
+        int randattribute=random(0,1)>0.8f?player.getPlayerAttribute():~((player.getPlayerAttribute()&0xffffff)+0xff00);
+        PVector tmp_Vec = stdVec.copy().rotate(deg * i);
+        int damage = int(random(5,10));//とりあえず設定．player側の体力と相談？
+        PVector bulletPos = new PVector();
+        bulletPos = this.position.copy();
+        world.addEnemyBullets(new Bul_Normal(bulletPos,tmp_Vec,damage,false,randattribute));
+        //super.bullets.add(new Bullet(position,tmp_Vec,damage));//後々falseを入れて修正．
 
+      }
     }
 
   }

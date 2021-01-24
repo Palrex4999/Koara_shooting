@@ -11,22 +11,18 @@ abstract class Bullet{
   protected int moving_pattern;
   protected PVector init_position;
   protected int counter;
-  
-  protected boolean explode;
-  protected boolean homing;
-  protected int b_timer;
-  protected ArrayList<Enemy> enemies;
+  protected int explosionsize;
+  protected int attribute;
 
-  public Bullet(PVector pos, PVector vel, int dam, boolean player) { //敵と自分の弾
+  public Bullet(PVector pos, PVector vel, int dam, boolean player,int attribute) { //敵と自分の弾
     position = pos.copy();
     velocity = vel.copy();
     damage = dam;
     is_player = player;
     init_position = new PVector(pos.x, pos.y);
     counter = 0;
-    explode = false;
-    homing = false;
-    b_timer = 0;
+    explosionsize=0;
+    this.attribute=attribute;
   }
 
   public void update() {
@@ -49,4 +45,6 @@ abstract class Bullet{
   public int getDamage() {
     return damage;
   }
+
+  public int getAttribute(){return attribute;}
 }
