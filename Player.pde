@@ -52,8 +52,8 @@ class Player {
     //damageが負の時＝同属性の弾に当たった時
     if(damage<0){
       absorbed=true;
-      absorb++;
-      if(absorb==10){//10回目のとき回復
+      absorb=min(10,absorb+1);
+      if(absorb==10 && HP!=100){//10回目のとき回復・体力満タンのときはゲージを保持したまま回復せず
         HP=min(100,HP-damage);
         absorb=0;
       }
