@@ -50,7 +50,8 @@ class World {
   private PImage frame,selectframe;
   private int transBulUI=255;
   private int transTopUI=255;
-  private PFont font = createFont("MS Gothic",60);
+  //private PFont font = createFont("MS Gothic",60);
+  private PFont font = loadFont("ArtifaktElement-Bold-48.vlw");
 
   //音
   private Minim minim;
@@ -358,14 +359,14 @@ class World {
   void drawMission(){ //目標の表示
     if(!boss_in){
       fill(50,transTopUI);
-      text("MISSION:BEAT 10 MICE!   "+str(min(10,beated))+"/10",width/3+57,82);
+      text("MISSION:BEAT 10 MICE!   "+str(min(10,beated))+"/10",width/3+47,82);
       fill(255,transTopUI);
-      text("MISSION:BEAT 10 MICE!   "+str(min(10,beated))+"/10",width/3+55,80);
+      text("MISSION:BEAT 10 MICE!   "+str(min(10,beated))+"/10",width/3+45,80);
     }else{
       fill(50,transTopUI);
-      text("MISSION:BEAT BOSS MOUSE!",width/3+57,82);
+      text("MISSION:BEAT BOSS MOUSE!",width/3+47,82);
       fill(255,transTopUI);
-      text("MISSION:BEAT BOSS MOUSE!",width/3+55,80);
+      text("MISSION:BEAT BOSS MOUSE!",width/3+45,80);
     }
   }
 
@@ -420,7 +421,7 @@ class World {
     textFont(font,50);
     fill(70);
     text("Score : ", 100, 200, width-200, 100);
-    text(" Beat : ", 100, 300, width-200, 100);
+    text("  Beat : ", 100, 300, width-200, 100);
 
     if(frameCount_over > 40){ // スコアを時間差で表示
       textAlign(RIGHT);
