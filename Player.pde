@@ -170,14 +170,14 @@ class Player {
     // 2020矢野変更 プレイヤーを画像に変更
 
     tint(attribute,200);
-    image(cat, position.x, position.y, 110, 110);
+    image(cat, position.x-5, position.y+5, 110, 110);
     tint(255,255);
 
     //2020矢野追加:プレイヤーの画像
-    image(cat, position.x, position.y, 100, 100);
+    image(cat, position.x-5, position.y+5, 100, 100);
 
     //当たり判定を薄く表示
-    fill(attribute,32);
+    fill(attribute,16);
     noStroke();
     circle(position.x,position.y,10);
   }
