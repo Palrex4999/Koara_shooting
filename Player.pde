@@ -148,7 +148,18 @@ class Player {
 
   // Playerを描画する関数
   public void draw() {
+    //弾の描画
+    for (int b_idx = 0; b_idx < this.bullets.size(); b_idx++) {
+      Bullet b = bullets.get(b_idx);
+      b.update();
+      if (b.getPosition().x > width || b.getPosition().x < 0
+        || b.getPosition().y > height || b.getPosition().y < 0)
+        bullets.remove(b_idx);
+      else 
+      b.draw();
+    }
     this.angle = calcHeadingAngle(this.position, new PVector(mouseX, mouseY));
+
     //////////////////////////////////////////
     //2021須賀修正分：
     //NullPointerException防止のためclushCount!=-1を条件に追加
@@ -169,17 +180,6 @@ class Player {
     fill(attribute,32);
     noStroke();
     circle(position.x,position.y,10);
-    
-    //弾の描画
-    for (int b_idx = 0; b_idx < this.bullets.size(); b_idx++) {
-      Bullet b = bullets.get(b_idx);
-      b.update();
-      if (b.getPosition().x > width || b.getPosition().x < 0
-        || b.getPosition().y > height || b.getPosition().y < 0)
-        bullets.remove(b_idx);
-      else 
-      b.draw();
-    }
   }
   
   private void drawDebri(int s){
