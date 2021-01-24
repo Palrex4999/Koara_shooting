@@ -13,8 +13,6 @@ class World {
   private int scene = 0; // 0: スタート画面，1: ゲーム画面，2: ゲームオーバー画面
 
   //スタート画面に用いる変数
-  private int textAlpha_start = 0; //文字の透明度
-  private int textAlphaSign = 1; //透明化の正負の向き
   private int[] starsX_start, starsY_start;  //星の位置座標
   private final int starsNum_start = 300; //星の数
   private boolean shootingStarOn_start = false; //流れ星を流すか
@@ -38,7 +36,6 @@ class World {
   private int clearedCount=0;
 
   private PVector player_p;  //player座標
-  //private PImage back; //プレイ画面の背景
 
   //ゲームオーバー画面に用いる変数
   private int frameCount_over = 0;//ゲームオーバー画面の経過時間
@@ -105,7 +102,6 @@ class World {
     haikei = loadImage("night_sky.png");
     gameclear = loadImage("gameclear.png");
     gameover = loadImage("gameover.png");
-    //back.resize(back.width+500, back.height+500);
     e=loadImage("e.png");
     q=loadImage("q.png");
     r=loadImage("r.png");
@@ -122,8 +118,6 @@ class World {
   /**************** スタート画面 **************************/
   private void init_start() {
     // スタート画面での初期化
-    textAlpha_start = 0;
-    textAlphaSign = 1;
 
     //星の位置をランダムで決定
     starsX_start = new int[starsNum_start];
@@ -148,7 +142,7 @@ class World {
     background(25, 25, 50);
     
     //タイトル画像を表示
-    image(titleImg_start_back, 0, 0);
+    image(titleImg_start_back, width/2+40, height/2+15);
 
     //星を描画
     for(int i=0; i<starsNum_start; i++){
@@ -181,23 +175,8 @@ class World {
       }
     }
 
-    /*
-    textAlign(CENTER);
-    fill(221, 74, 197, textAlpha_start);
-    textSize(30);
-    text("Press ENTER", width/2-100, 450, 200, 50);
-    */
-    image(titleImg_start, width/2-300, 70, 600, 320);
-    image(pressEnter, width/2-100, 400);
-    //文字の透明度を変更
-    
-    //////////////////////////////////////////
-    //2021須賀修正分：
-    //条件分岐簡略化：boolでなく符号の向きを管理するよう変更
-    textAlpha_start+=textAlphaSign*2;
-    if(textAlpha_start > 255 || textAlpha_start < 0)
-      textAlphaSign*=-1;
-    //////////////////////////////////////////
+    image(titleImg_start, width/2, 230, 600, 320);
+    image(pressEnter, width/2, 400);
   }
 
   /***************** ゲーム画面 **************************/
@@ -236,13 +215,14 @@ class World {
     //image(back, -player_p.x, -player_p.y);
     PImage back = getDisplayImage(); //2020矢野追加
     background(back);
-    // ゲーム画面での毎フレームの処理
 
     lastHP_game = 0;
     //120フレームごとに敵を追加
     if(frameCount%120==0 && !boss_in) {
       Enemy e = new Enemy(new PVector(random(width, width*1.2), random(height*0.1, height*0.9))); //画面外に生成
+      Enemy e2 = new Enemy(new PVector(random(width, width*1.2), random(height*0.1, height*0.9))); //画面外に生成
       enemies.add(e);
+      enemies.add(e2);
     }
     //敵の毎フレームごとの処理
     for(int e_idx = 0; e_idx < enemies.size(); e_idx++) {
@@ -302,11 +282,12 @@ class World {
       player.update();
       player.draw();
       player_p = player.getPosition();
+
       //UIの表示
       drawHP(player);
       drawAbsorb(player);
-      //drawLife(player);
       drawScore();
+
       //HP管理
       if(player.getHP()<=0){
         player.setHP(100);
@@ -315,6 +296,7 @@ class World {
         textSize(30);
         delay(500);
       }
+
       //弾吸収時
       if(player.absorbed){
         score+=100;
@@ -368,31 +350,32 @@ class World {
   }
 
   void drawBulletsUI(){//弾UI描画
+    //マウスカーソルやプレイヤーが近づくと半透明化
     if((mouseX<400 && mouseY>height-125) || (player_p.x<420 && player_p.y>height-125))transUI=max(transUI-(16+transUI/20),66);
     else transUI=min(transUI+16,255);
 
-    tint(255.0,transUI);
+    tint(255,transUI);
     for(int i=0;i<4;i++){
-      image(frame,10+100*i,height-96);
+      image(frame,50+100*i,height-48);
       for (Player player : players) {
         if(i==player.getBulletType()){
-          image(selectframe,10+100*i,height-96);
+          image(selectframe,50+100*i,height-48);
         }
       }
     }
     
-    image(e_fig,10,height-96);
-    image(e,10,height-32);
+    image(e_fig,50,height-48);
+    image(e,20,height-16);
     
-    image(q_fig,110,height-96);
-    image(q,110,height-32);
+    image(q_fig,150,height-48);
+    image(q,120,height-16);
 
-    image(r_fig,210,height-96);
-    image(r,210,height-32);
+    image(r_fig,250,height-48);
+    image(r,220,height-16);
 
-    image(f_fig,310,height-96);
-    image(f,310,height-32);
-    tint(255.0,255);
+    image(f_fig,350,height-48);
+    image(f,320,height-16);
+    tint(255,255);
   }
 
   /************* ゲームオーバー画面 ***********************/
@@ -403,7 +386,6 @@ class World {
     rect(50, 50, width-100, height-100);
     frameCount_over = 0;
 
-    //float gain = bgm_over.getGain();
     bgm_over.setGain(-10);
     bgm_over.rewind();
     bgm_over.loop();
@@ -411,13 +393,11 @@ class World {
 
   private void draw_over() {
     // ゲームオーバー画面での毎フレームの処理
-    if(isGameClear_game) image(gameclear, 280, 80);
-    if(isGameOver_game) image(gameover, 280, 80);
+    if(isGameClear_game) image(gameclear, width/2, 120);
+    if(isGameOver_game) image(gameover, width/2, 120);
     
-
     textAlign(LEFT);
     text("Score : ", 100, 200, width-200, 100);
-
     text("Beated : ", 100, 300, width-200, 100);
 
     if(frameCount_over > 40){ // スコアを時間差で表示
@@ -430,7 +410,7 @@ class World {
       text(str(beated), 100, 300, width-200, 100);
     }
 
-    if(frameCount_over > 120){ // RetryボタンとExitボタンを時間差で表示
+    if(frameCount_over > 60){ // RetryボタンとExitボタンを時間差で表示
       fill(200);
       noStroke();
       rect(width/2-100-125, 440, 125, 50);
@@ -474,6 +454,7 @@ class World {
       init_start();
     }
   }
+
   //キーボード処理
   void keyPressed(int key) {
     if(scene == 0){ // スタート画面
@@ -499,13 +480,6 @@ class World {
       }
     }
 
-    /*
-    if(key == 'e') {//eキーで敵を出現させる(デバッグ用？)
-      Enemy e = new Enemy(new PVector(random(width), random(height)));
-      enemies.add(e);
-    }
-    */
-
     for(Player player : players) player.keyPressed(key);
     for(Enemy enemy : enemies) enemy.keyPressed(key);
   }
@@ -513,6 +487,7 @@ class World {
   void keyReleased(int key){
     for(Player player : players) player.keyReleased(key);
   }
+  
   //マウス処理
   void mousePressed(){
     if(scene == 1){
@@ -585,5 +560,5 @@ class World {
   
     //作成した表示用画像を返却する
     return( map );
-}
+  }
 }

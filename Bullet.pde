@@ -18,17 +18,17 @@ class Bul_Normal extends Bullet {
   public void draw() {
     noStroke();
     if(is_player){ //プレイヤー
-      fill(attribute);
-      circle(position.x, position.y, 12);
-      image(fish1, position.x-15, position.y-20, 25, 35);
-    }else{ //敵
-      push();
-      imageMode(CENTER);
+      fill(attribute,200); 
+      circle(position.x, position.y, 15);
       tint(attribute,200);
-      image(cheese, position.x, position.y, 40, 40);
+      image(fish1, position.x, position.y, 35, 45);
+      tint(255,255);
+      image(fish1, position.x, position.y, 25, 35);
+    }else{ //敵
+      tint(attribute,164);
+      image(cheese, position.x, position.y, 38, 38);
       tint(255,255);
       image(cheese, position.x, position.y, 30, 30);
-      pop(); 
     }
   }
 }
@@ -44,13 +44,14 @@ class Bul_Boost extends Bullet {
   public void draw() {
     noStroke();
     if(is_player){ //プレイヤー
-      //for(int i=-6; i<=6; i=i+6){
-        fill(attribute, 150);
-        circle(position.x, position.y, 12);
-        image(fish3, position.x-15, position.y-20, 25, 35);
-      //}
+      fill(attribute,200);
+      circle(position.x, position.y, 11);
+      tint(attribute, 200);
+      image(fish3, position.x, position.y, 40, 50);
+      tint(255,255);
+      image(fish3, position.x, position.y, 25, 35);
     }else{ //敵
-      fill(attribute);
+      fill(attribute,200);
       circle(position.x, position.y, 5);
     }
   }
@@ -71,19 +72,23 @@ class Bul_Explosion extends Bullet{
   public void draw() {
     noStroke();
     if(is_player){ //プレイヤー
-      fill(attribute, 150);
-      circle(position.x, position.y, 12);
-      image(fish2, position.x-15, position.y-20, 25, 35);
+      //発射後30フレーム後爆発開始
+      if(cnt<30){
+        cnt+=1;
+        fill(attribute,200);
+        circle(position.x, position.y, 14);
+        tint(attribute, 200);
+        image(fish2, position.x, position.y, 40, 50);
+        tint(255,255);
+        image(fish2, position.x, position.y, 25, 35);
+      }else{
+        this.damage=50;
+        explosion(5,30);
+      }
+      
     }else{ //敵
-      fill(attribute);
+      fill(attribute,200);
       circle(position.x, position.y, 5);
-    }
-
-    //発射後30フレーム後爆発開始
-    if(cnt<30)cnt+=1;
-    else{
-      this.damage=50;
-      explosion(5,30);
     }
   }
 
@@ -119,13 +124,14 @@ class Bul_Homing extends Bullet{
   public void draw() {
     noStroke();
     if(is_player){ //プレイヤー
-      //for(int i=-6; i<=6; i=i+6){
-        fill(attribute, 150);
-        circle(position.x, position.y, 12);
-        image(fish4, position.x-15, position.y-20, 25, 35);
-      //}
+      fill(attribute,200);
+      circle(position.x, position.y, 12);
+      tint(attribute, 200);
+      image(fish4, position.x, position.y, 35, 45);
+      tint(255, 255);
+      image(fish4, position.x, position.y, 25, 35);
     }else{ //敵
-      fill(attribute); 
+      fill(attribute,200); 
       circle(position.x, position.y, 5);
     }
     homing();
