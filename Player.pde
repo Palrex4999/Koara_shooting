@@ -84,6 +84,9 @@ class Player {
 
   public void hitCheck() {
     //敵の弾の衝突判定
+
+    if(world.isGameClear_game)return;//ボス撃破後は無敵
+    
     //2021須賀修正：敵・ボスの弾をworldで一元管理
     for (int b_idx = world.getEnemyBullets().size()-1; b_idx > 0; b_idx--) {
       Bullet e_bullet = world.getEnemyBullets().get(b_idx);

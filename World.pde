@@ -32,7 +32,7 @@ class World {
   private int beated; //敵の撃破数
   private boolean boss_in = false; // true: boss出現
   private boolean isGameOver_game = false;//ゲームオーバーかどうか
-  private boolean isGameClear_game = false;
+  public boolean isGameClear_game = false;
   private int clearedCount=0;
 
   private PVector player_p;  //player座標
