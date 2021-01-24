@@ -48,8 +48,10 @@ class World {
   private PImage e,q,r,f;
   private PImage e_fig,q_fig,r_fig,f_fig;
   private PImage frame,selectframe;
-  private int transUI=255;
-  
+  private int transBulUI=255;
+  private int transTopUI=255;
+  private PFont font = createFont("MS Gothic",60);
+
   //音
   private Minim minim;
   private AudioPlayer bgm_start, bgm_game, bgm_over;
@@ -73,10 +75,7 @@ class World {
     players = new ArrayList<Player>();
     enemies = new ArrayList<Enemy>();
     enemybullets = new ArrayList<Bullet>();
-
-    //日本語表示対応
-    PFont font = createFont("MS Gothic",50);
-    textFont(font);
+    
     //サウンド関係
     minim = new Minim(getPApplet());
     bgm_start = minim.loadFile("opening.mp3");
@@ -212,9 +211,15 @@ class World {
 
   private void draw_game() {
     // ゲーム画面での毎フレームの処理
-    //image(back, -player_p.x, -player_p.y);
+    //背景描画
     PImage back = getDisplayImage(); //2020矢野追加
     background(back);
+
+    //プレイヤーの毎フレームごとの処理１：弾避けのためプレイヤーは敵の弾より後ろに表示
+    for(Player player : players) {
+      player.update();
+      player.draw();
+    }
 
     lastHP_game = 0;
     //120フレームごとに敵を追加
@@ -244,7 +249,7 @@ class World {
         enemy.draw();
     }
 
-    //2021須賀追加：敵消滅後の弾の描画処理
+    //2021須賀追加：敵の弾の描画処理
     for(int b_idx = enemybullets.size()-1; b_idx >= 0 ; b_idx--) {
       Bullet b = enemybullets.get(b_idx);
       b.update(); 
@@ -279,14 +284,16 @@ class World {
     }
     //プレイヤーの毎フレームごとの処理
     for(Player player : players) {
-      player.update();
-      player.draw();
       player_p = player.getPosition();
 
       //UIの表示
+      if(mouseY<100 || player_p.y<100)transTopUI=max(transTopUI-(16+transTopUI/20),66);
+      else transTopUI=min(transTopUI+16,255);
+      textFont(font,30);
       drawHP(player);
       drawAbsorb(player);
       drawScore();
+      drawMission();
 
       //HP管理
       if(player.getHP()<=0){
@@ -320,41 +327,54 @@ class World {
   }
 
  void drawHP(Player player){ //残りHPの描画
-      fill(255);
-      text("HP",10,35);
-      fill(200);
-      rect(60,8,200,30);
-      fill(255,0,0);
-      rect(60,8,player.getHP()*2,30);
+    fill(50,transTopUI);
+    text("HP",12,37);
+    fill(255,transTopUI);
+    text("HP",10,35);
+    fill(200,transTopUI);
+    rect(60,8,200,30);
+    fill(255,0,0,transTopUI);
+    rect(60,8,player.getHP()*2,30);
   }
 
   void drawAbsorb(Player player){ //吸収数の描画
-      fill(255);
-      text("Absorb",10,65);
-      fill(200);
-      rect(60,70,200,10);
-      fill(0,230,0);
-      rect(60,70,player.getAbsorbNum()*20,10);
-  }
-
- void drawLife(Player player){ //残りライフの描画
-      fill(255);
-      textSize(30);
-      text("LIFE:"+player.getLife(),100,70);
+    fill(50,transTopUI);
+    text("ABSORB",12,67);
+    fill(255,transTopUI);
+    text("ABSORB",10,65);
+    fill(200,transTopUI);
+    rect(60,70,200,5);
+    fill(0,230,0,transTopUI);
+    rect(60,70,player.getAbsorbNum()*20,5);
   }
 
  void drawScore(){ //スコアの表示
-    fill(255);
-    textSize(30);
-    text("SCORE:"+score,width/2.0,35);
+    fill(50,transTopUI);
+    text("SCORE:"+score,width/2-48,37);
+    fill(255,transTopUI);
+    text("SCORE:"+score,width/2-50,35);
+  }
+
+  void drawMission(){ //目標の表示
+    if(!boss_in){
+      fill(50,transTopUI);
+      text("MISSION:BEAT 10 MICE!   "+str(min(10,beated))+"/10",width/3+57,82);
+      fill(255,transTopUI);
+      text("MISSION:BEAT 10 MICE!   "+str(min(10,beated))+"/10",width/3+55,80);
+    }else{
+      fill(50,transTopUI);
+      text("MISSION:BEAT BOSS MOUSE!",width/3+57,82);
+      fill(255,transTopUI);
+      text("MISSION:BEAT BOSS MOUSE!",width/3+55,80);
+    }
   }
 
   void drawBulletsUI(){//弾UI描画
     //マウスカーソルやプレイヤーが近づくと半透明化
-    if((mouseX<400 && mouseY>height-125) || (player_p.x<420 && player_p.y>height-125))transUI=max(transUI-(16+transUI/20),66);
-    else transUI=min(transUI+16,255);
+    if((mouseX<400 && mouseY>height-125) || (player_p.x<420 && player_p.y>height-125))transBulUI=max(transBulUI-(16+transBulUI/20),66);
+    else transBulUI=min(transBulUI+16,255);
 
-    tint(255,transUI);
+    tint(255,transBulUI);
     for(int i=0;i<4;i++){
       image(frame,50+100*i,height-48);
       for (Player player : players) {
@@ -397,20 +417,25 @@ class World {
     if(isGameOver_game) image(gameover, width/2, 120);
     
     textAlign(LEFT);
+    textFont(font,50);
+    fill(70);
     text("Score : ", 100, 200, width-200, 100);
-    text("Beated : ", 100, 300, width-200, 100);
+    text(" Beat : ", 100, 300, width-200, 100);
 
     if(frameCount_over > 40){ // スコアを時間差で表示
       textAlign(RIGHT);
+      fill(70);
       text(str(score), 100, 200, width-200, 100);
     }
 
-    if(frameCount_over > 80){ // 残りHPを時間差で表示
+    if(frameCount_over > 80){ // 撃破数を時間差で表示
       textAlign(RIGHT);
+      fill(70);
       text(str(beated), 100, 300, width-200, 100);
     }
 
-    if(frameCount_over > 60){ // RetryボタンとExitボタンを時間差で表示
+    textFont(font,32);
+    if(frameCount_over > 120){ // RetryボタンとExitボタンを時間差で表示
       fill(200);
       noStroke();
       rect(width/2-100-125, 440, 125, 50);
