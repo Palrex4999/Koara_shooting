@@ -35,6 +35,7 @@ class World {
   private boolean boss_in = false; // true: boss出現
   private boolean isGameOver_game = false;//ゲームオーバーかどうか
   private boolean isGameClear_game = false;
+  private int clearedCount=0;
 
   private PVector player_p;  //player座標
   //private PImage back; //プレイ画面の背景
@@ -226,6 +227,7 @@ class World {
     //リトライ時にスコアや撃破数をリセットした真っ新な状態にする
     score=0;
     beated=0;
+    clearedCount=0;
     //////////////////////////////////////////
   }
 
@@ -275,20 +277,22 @@ class World {
     }
 
     if(boss_in){ //ボス登場
-      boss.update();
-      if(boss.is_hit){ //弾がヒットしたら
+      if (boss.is_dead){ // Bossが倒されたらisGameClear_gameをtrueにする
+        if(!isGameClear_game){
+          score+=10000;//2021須賀追加：Bossが倒されたら10000点
+          beated++;
+        }
+        isGameClear_game = true;
+      }else{
+        boss.update();
+        boss.draw();
+        if(boss.is_hit){ //弾がヒットしたら
         score+=10;
+        }
       }
       if(boss.is_absorb){ //弾が吸収されたら
         score-=10;
         boss.is_absorb=false;
-      }
-      if (boss.is_dead){ // Bossが倒されたらisGameClear_gameをtrueにする
-        isGameClear_game = true;
-        score+=10000;//2021須賀追加：Bossが倒されたら10000点
-        beated++;
-      }else{
-        boss.draw();
       }
     }else if(beated>=10){ // enemy撃破数でtrueに変更
       boss_in = true;
@@ -329,7 +333,8 @@ class World {
 
 
     if(isGameOver_game || isGameClear_game)
-      changeSceneTo(2);
+      if(clearedCount<60 && isGameClear_game)clearedCount++;
+      else changeSceneTo(2);
   }
 
  void drawHP(Player player){ //残りHPの描画
