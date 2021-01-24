@@ -23,7 +23,7 @@ class Enemy extends Enemy_Base{
 
     //2020矢野変更:敵を赤丸からネズミの画像に置き換え
     image(mouse_white, position.x, position.y, size*2, size*2);
-    drawhp(80);
+    drawhp(80,attribute);
     pop();
   }
   //Override
@@ -123,7 +123,7 @@ class Boss extends Enemy_Base{
     circle(position.x,position.y,size);
     //2020矢野変更:敵を赤丸からネズミの画像に置き換え
     image(img, position.x, position.y, size*1.8, size*1.8);
-    drawhp(200);
+    drawhp(200,attribute);
     pop();
 
     //150frame毎に属性が反転する

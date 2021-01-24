@@ -59,8 +59,8 @@ abstract class Enemy_Base {
     this.size = size;
   }
 
-  protected void drawhp(int len){
-    fill(255, 0, 0);
+  protected void drawhp(int len,int attribute){
+    fill(attribute);
     int hpLength = (int)map(hp, 0, maxHP, 0, len);
     rectMode(CENTER);
     rect(position.x-20, position.y-size/1.5, hpLength, 5);
