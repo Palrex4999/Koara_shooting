@@ -26,7 +26,8 @@ void setup() {
   fish4 = loadImage("data/fish4.png");
   cheese = loadImage("data/cheese.png");
   mouse_white = loadImage("data/mouse_white.png");
-
+  ellipseMode(CENTER);
+  imageMode(CENTER);
 }
 
 void draw() {

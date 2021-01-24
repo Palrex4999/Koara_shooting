@@ -8,8 +8,6 @@ abstract class Bullet{
   protected PVector velocity;
   protected int damage;
   protected boolean is_player;
-  protected int moving_pattern;
-  protected PVector init_position;
   protected int counter;
   protected int explosionsize;
   protected int attribute;
@@ -19,7 +17,6 @@ abstract class Bullet{
     velocity = vel.copy();
     damage = dam;
     is_player = player;
-    init_position = new PVector(pos.x, pos.y);
     counter = 0;
     explosionsize=0;
     this.attribute=attribute;
