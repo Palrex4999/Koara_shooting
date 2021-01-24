@@ -18,7 +18,7 @@ class Player {
   //2021須賀修正分：
   //クラス下部で行われていた変数宣言を上部へ
   //NullPointerException防止でclushCountを-1で初期化
-  private int hitCount, boostCount, shootCount;
+  private int hitCount;
   private int clushCount=-1;
   private PVector[] debris = new PVector[6];//xにrad, yに変位
   //////////////////////////////////////////
@@ -52,8 +52,8 @@ class Player {
     //damageが負の時＝同属性の弾に当たった時
     if(damage<0){
       absorbed=true;
-      absorb++;
-      if(absorb==10){//10回目のとき回復
+      absorb=min(10,absorb+1);
+      if(absorb==10 && HP!=100){//10回目のとき回復・体力満タンのときはゲージを保持したまま回復せず
         HP=min(100,HP-damage);
         absorb=0;
       }
@@ -84,6 +84,9 @@ class Player {
 
   public void hitCheck() {
     //敵の弾の衝突判定
+
+    if(world.isGameClear_game)return;//ボス撃破後は無敵
+    
     //2021須賀修正：敵・ボスの弾をworldで一元管理
     for (int b_idx = world.getEnemyBullets().size()-1; b_idx > 0; b_idx--) {
       Bullet e_bullet = world.getEnemyBullets().get(b_idx);
@@ -127,7 +130,6 @@ class Player {
   public void update() {
     changePosition();
     hitCheck();
-    animation();
     checkWall();
   }
 
@@ -142,51 +144,11 @@ class Player {
     }
     shootSE.rewind();
     shootSE.play();
-    shootCount = millis();
   }
 
   // Playerを描画する関数
   public void draw() {
-    push();
-    this.angle = calcHeadingAngle(this.position, new PVector(mouseX, mouseY));
-    translate(position.x, position.y);
-
-    //////////////////////////////////////////
-    //2021須賀修正分：
-    //NullPointerException防止のためclushCount!=-1を条件に追加
-    if(clushCount!=-1 && millis() - clushCount < 2000)
-      drawDebri(millis() - clushCount);
-    //////////////////////////////////////////
-    /* 2020矢野変更 プレイヤーを画像に変更
-    rotate(this.angle);
-    noStroke();
-    //炎のゆらぎ
-    fill(255, 100, 0);
-    ellipse(0.0,size / 2, size / 4, size / 4 * (millis() - boostCount) / 20);
-    //hit時の点滅
-    if ((millis() - hitCount) / 100 % 2 == 0 && (millis() - hitCount) < 1000) fill(0);
-    else fill(255, 255, 0);   
-    // 機体の絵
-    if(millis() - shootCount <= 100) translate(0, (millis() - shootCount) / 5);
-    drawAircraft(this.size);
-    */
-
-    imageMode(CENTER);
-    tint(attribute,128);
-    image(cat, 0, 0, 130, 130);
-    tint(255,255);
-
-    //2020矢野追加:プレイヤーの画像
-    image(cat, 0, 0, 100, 100);
-    pop();
-
-    push();
-    fill(attribute,32);
-    noStroke();
-    ellipseMode(CENTER);
-    circle(position.x,position.y,10);
-    pop();
-    
+    //弾の描画
     for (int b_idx = 0; b_idx < this.bullets.size(); b_idx++) {
       Bullet b = bullets.get(b_idx);
       b.update();
@@ -196,46 +158,28 @@ class Player {
       else 
       b.draw();
     }
+    this.angle = calcHeadingAngle(this.position, new PVector(mouseX, mouseY));
+
+    //////////////////////////////////////////
+    //2021須賀修正分：
+    //NullPointerException防止のためclushCount!=-1を条件に追加
+    if(clushCount!=-1 && millis() - clushCount < 2000)
+      drawDebri(millis() - clushCount);
+    //////////////////////////////////////////
     
-    //drawProperties();
-  }
-  
-  private void drawProperties() {
-    fill(255,255,0);
+    // 2020矢野変更 プレイヤーを画像に変更
+
+    tint(attribute,200);
+    image(cat, position.x-5, position.y+5, 110, 110);
+    tint(255,255);
+
+    //2020矢野追加:プレイヤーの画像
+    image(cat, position.x-5, position.y+5, 100, 100);
+
+    //当たり判定を薄く表示
+    fill(attribute,16);
     noStroke();
-    for(int i = 0; i < life; i++) {
-      push();
-      int x = 40 + 25 * i;
-      int y = 40;
-      
-      translate(x, y);
-      drawAircraft(15);
-      pop();
-    }
-    
-    
-    fill(100, 200, 150);
-    noStroke();
-    float barSize = map(HP, 0, 100, 0, width - 200);
-    rect(200, 30, barSize, 10);
-    
-    fill(255);
-    textSize(20);
-    text(str(this.HP), 160, 42.5);
-  }
-  
-  // s: size, p: position
-  private void drawAircraft(int s) {
-    triangle(- s / 3, s / 2, 
-      - s / 6, - s / 2, 
-      - s * 2 / 3, s / 2);
-    triangle(s / 3, s / 2, 
-      s / 6, - s/ 2, 
-      s * 2 / 3, s / 2);
-    triangle(0.0, - s, 
-      s / 3, 0.0, 
-      - s / 3, 0.0);    
-    ellipse(0.0, 0.0, s / 2, s);
+    circle(position.x,position.y,10);
   }
   
   private void drawDebri(int s){
@@ -244,10 +188,6 @@ class Player {
       ellipse(s/10.0*debris[idx].y*world.sc.cos[int(degrees(debris[idx].x))%360], s/10.0*debris[idx].y*world.sc.sin[int(debris[idx].x)%360],
       10, 10);
     }
-  }
-
-  public void animation() {
-    boostCount = (millis() - boostCount >= 200) ? millis() : boostCount ;
   }
   
   private void checkWall() {
@@ -296,12 +236,13 @@ class Player {
 
   private boolean key_a, key_w, key_d, key_s;
   public void keyPressed(int key) {
-
+    //自機移動
     if (key == 'a') key_a = true;
     if (key == 'w') key_w = true;
     if (key == 'd') key_d = true;
     if (key == 's') key_s = true;
 
+    //弾の種類変更
     if(key == 'e'){
       bultype=0;
       bulway=1;
@@ -319,19 +260,20 @@ class Player {
       bulway=0;
     }
 
+    //属性反転
     if(key == ' '){
       attribute=~((attribute&0xffffff)+0xff00);
     }
   }
   
   public void keyReleased(int key){
-    //if (key == 'a') println("releasing a");
     if (key == 'a') key_a = false;
     if (key == 'w') key_w = false;
     if (key == 'd') key_d = false;
     if (key == 's') key_s = false;
   }
   
+  //自機移動
   private void changePosition(){
     if(key_a) position.x -= 5;
     if(key_w) position.y -= 5;

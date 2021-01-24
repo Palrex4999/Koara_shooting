@@ -9,31 +9,18 @@ class Enemy extends Enemy_Base{
   //Override
   // Enemy を描画する関数
   public void draw() {
-    //int r = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*10.0);
-    //int c = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*50.0); //±50
-    //fill(200+c,50-c,50-c);
-    //noStroke();
-    //circle(position.x,position.y,size+r);
-
-    push();
-    imageMode(CENTER);
     tint(attribute,128);
     image(mouse_white, position.x, position.y, size*2+30, size*2+30);
     tint(255,255);
 
     //2020矢野変更:敵を赤丸からネズミの画像に置き換え
     image(mouse_white, position.x, position.y, size*2, size*2);
-    drawhp(80);
-    pop();
+    drawhp(80,attribute);
   }
   //Override
   public void move(){
     if(moveselect == 0){//矢野変更:動きパターン1　まっすぐ
-      /*if(millis()/1000 % moveflag == 0){*/
-        position.add(velocity);
-      /*}else{
-        position.add(-velocity.x ,velocity.y);
-      }*/
+      position.add(velocity);
     }else{//動きパターン2　Playerに向けて動く
       position.add(velocity2);
     }
@@ -52,12 +39,11 @@ class Enemy extends Enemy_Base{
     for(int i=0 ; i<3 ; i++){
       float tmp_deg = -deg + deg * i;
       PVector tmp_Vec = toPlayerVec.copy().rotate(tmp_deg).normalize().mult(2.0);
-      int damage = int(random(10,15));
+      int damage = 10;
       
       PVector bulletPos = new PVector();
       bulletPos = this.position.copy();
       world.addEnemyBullets(new Bul_Normal(bulletPos,tmp_Vec,damage,false,getAttributeRandomReverse(0.8)));
-      //bullets.add(new Bullet(position,tmp_Vec,damage)); //とりあえず動かすために戻しました。後でfalse入れる
     }
   }
 
@@ -94,12 +80,12 @@ class Boss extends Enemy_Base{
     super(pos);
     sethp(30);
     setsize(150);
-    movespeed = -1;
+    movespeed = -3;
     isShooted_Nway = false;
     numShoot_NWay = 40;
     bulletSpeed_Nway =int(random(3,6));
     shootTiming_Nway = int(random(1000,2000)); //矢野変更:タイミングを変更
-    super.shootingTiming_ms= int(random(200,500));
+    super.shootingTiming_ms= int(random(50,250));
     super.heartbeat_phase = random(2.0*PI);
     super.heartbeat_freq = 400.0;
     img = loadImage("data/mouse.png");
@@ -109,13 +95,6 @@ class Boss extends Enemy_Base{
   //Override
   // Enemy を描画する関数
   public void draw() {
-    //int r = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*10.0);
-    //int c = (int) (world.sc.sin[int(millis()/heartbeat_freq + heartbeat_phase)%360]*50.0); //±50
-    //fill(200+c,50-c,50-c);
-    //noStroke();
-    push();
-    ellipseMode(CENTER);
-    imageMode(CENTER);
     fill(attribute,128);
     noStroke();
     circle(position.x,position.y,size*1.1);
@@ -123,8 +102,7 @@ class Boss extends Enemy_Base{
     circle(position.x,position.y,size);
     //2020矢野変更:敵を赤丸からネズミの画像に置き換え
     image(img, position.x, position.y, size*1.8, size*1.8);
-    drawhp(200);
-    pop();
+    drawhp(200,attribute);
 
     //150frame毎に属性が反転する
     if(cnt++>150){
