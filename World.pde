@@ -141,7 +141,7 @@ class World {
     background(25, 25, 50);
     
     //タイトル画像を表示
-    image(titleImg_start_back, width/2+40, height/2+15);
+    image(titleImg_start_back, width/2+40, height/2);
 
     //星を描画
     for(int i=0; i<starsNum_start; i++){
